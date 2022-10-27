@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace TheRestaurant.Person_Objects
 {
-    internal class Person
+    interface IPerson
     {
+        public string Name { get; set; }
+        public int Counter { get; set; }
     }
 }

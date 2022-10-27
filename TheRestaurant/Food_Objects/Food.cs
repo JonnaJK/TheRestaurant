@@ -8,5 +8,6 @@ namespace TheRestaurant.Food_Objects
 {
     internal class Food
     {
+
     }
 }
