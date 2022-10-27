@@ -13,7 +13,7 @@ namespace TheRestaurant.Food_Objects
         public int Price { get; set; }
         public bool Lactose { get; set; }
         public bool Gluten { get; set; }
-        public bool FoodIsVego { get; set; }
+        public bool Veg { get; set; }
     }
 
     internal class Köttbullar : Meat
@@ -40,7 +40,7 @@ namespace TheRestaurant.Food_Objects
         {
             Name = "Skosula";
             Price = 789;
-            FoodIsVego = true;
+            Veg = true;
         }
     }
 }

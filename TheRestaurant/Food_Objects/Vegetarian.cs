@@ -13,34 +13,35 @@ namespace TheRestaurant.Food_Objects
         public int Price { get; set; }
         public bool Lactose { get; set; }
         public bool Gluten { get; set; }
-        public bool FoodIsVego { get; set; }
+        public bool Veg { get; set; } = true;
     }
 
-    internal class Mjölk : Vegetarian
+    internal class QuinoaSalad : Vegetarian
     {
-        public Mjölk()
+        public QuinoaSalad()
         {
-            Name = "Mjölk";
-            Price = 123;
+            Name = "Quinoa salad";
+            Price = 149;
         }
     }
-    internal class Gräs : Vegetarian
+
+    internal class TomatoSoup : Vegetarian
     {
-        public Gräs()
+        public TomatoSoup()
         {
-            Name = "Gräs";
-            Price = 456;
+            Name = "Tomato soup";
+            Price = 119;
             Lactose = true;
-            Gluten = true;
         }
     }
-    internal class Bönor : Vegetarian
+
+    internal class Falafel : Vegetarian
     {
-        public Bönor()
+        public Falafel()
         {
-            Name = "Bönor";
-            Price = 789;
-            FoodIsVego = true;
+            Name = "Falafel";
+            Price = 129;
+            Gluten = true;
         }
     }
 }
