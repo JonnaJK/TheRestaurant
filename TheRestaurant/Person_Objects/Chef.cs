@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace TheRestaurant.Person_Objects
 {
-    internal class Chef : IPerson
+    internal class Chef : Person
     {
-        public string Name { get; set; }
-        public int Counter { get; set; }
+        // Ärver Name och counter från Person
         public bool IsCompetent { get; set; } // ev ändra till en int, som foodpoints
 
         public Chef(Random random)
         {
             int probability = random.Next(100);
-            if (probability < 70)
+            if (probability > 50)
             {
                 IsCompetent = true;
             }
