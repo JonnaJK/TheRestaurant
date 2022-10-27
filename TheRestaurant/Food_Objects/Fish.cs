@@ -16,31 +16,30 @@ namespace TheRestaurant.Food_Objects
         public bool Veg { get; set; }
     }
 
-    internal class Torsk : Fish
+    internal class Oyster : Fish
     {
-        public Torsk()
+        public Oyster()
         {
-            Name = "Torsk";
-            Price = 123;
+            Name = "Oysters";
+            Price = 279;
         }
     }
-    internal class Lax : Fish
+    internal class RainbowSalmon : Fish
     {
-        public Lax()
+        public RainbowSalmon()
         {
-            Name = "Lax";
-            Price = 456;
+            Name = "Rainbow salmon";
+            Price = 199;
             Lactose = true;
-            Gluten = true;
         }
     }
-    internal class Strömming : Fish
+    internal class FishAndChips : Fish
     {
-        public Strömming()
+        public FishAndChips()
         {
-            Name = "Strömming";
-            Price = 789;
-            Veg = true;
+            Name = "Fish and chips";
+            Price = 139;
+            Gluten = true;
         }
     }
 }

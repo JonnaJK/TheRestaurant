@@ -1,4 +1,6 @@
-﻿using TheRestaurant.Person_Objects;
+﻿using TheRestaurant.Food_Objects;
+using TheRestaurant.Interface;
+using TheRestaurant.Person_Objects;
 
 namespace TheRestaurant
 {
@@ -9,6 +11,9 @@ namespace TheRestaurant
             Random random = new Random();
             Guest guest = new(random);
             Chef chef = new(random);
+
+            IFood tomatosoup = new TomatoSoup(); // varför IFood?
+            TomatoSoup tomatoSoup = new();       // och inte detta?
         }
     }
 }

@@ -16,31 +16,30 @@ namespace TheRestaurant.Food_Objects
         public bool Veg { get; set; }
     }
 
-    internal class Köttbullar : Meat
+    internal class PastaBolgonese : Meat
     {
-        public Köttbullar()
+        public PastaBolgonese()
         {
-            Name = "Köttbullar";
-            Price = 123;
+            Name = "Pasta bolgonese";
+            Price = 169;
         }
     }
-    internal class Disktrasa : Meat
+    internal class FilétMignon : Meat
     {
-        public Disktrasa()
+        public FilétMignon()
         {
-            Name = "Disktrasa";
-            Price = 456;
-            Lactose = true;
+            Name = "Filét mignon";
+            Price = 399;
+        }
+    }
+    internal class Hamburger : Meat
+    {
+        public Hamburger()
+        {
+            Name = "Prime rib hamburger";
+            Price = 219;
             Gluten = true;
-        }
-    }
-    internal class Skosula : Meat
-    {
-        public Skosula()
-        {
-            Name = "Skosula";
-            Price = 789;
-            Veg = true;
+            Lactose = true;
         }
     }
 }
