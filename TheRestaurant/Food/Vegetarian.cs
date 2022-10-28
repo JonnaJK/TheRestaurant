@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheRestaurant.Interface;
 
-namespace TheRestaurant.Food_Objects
+namespace TheRestaurant.Food
 {
     internal class Vegetarian : IFood
     {
