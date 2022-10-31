@@ -11,9 +11,6 @@ namespace TheRestaurant.Food
     {
         public string Name { get; set; }
         public int Price { get; set; }
-        public bool Lactose { get; set; }
-        public bool Gluten { get; set; }
-        public bool Veg { get; set; }
     }
 
     internal class PastaBolgonese : Meat
@@ -38,8 +35,6 @@ namespace TheRestaurant.Food
         {
             Name = "Prime rib hamburger";
             Price = 219;
-            Gluten = true;
-            Lactose = true;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheRestaurant.Person_Objects
+namespace TheRestaurant.Person
 {
     internal class Chef : Person
     {

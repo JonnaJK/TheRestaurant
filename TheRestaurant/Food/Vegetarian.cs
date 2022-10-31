@@ -11,9 +11,6 @@ namespace TheRestaurant.Food
     {
         public string Name { get; set; }
         public int Price { get; set; }
-        public bool Lactose { get; set; }
-        public bool Gluten { get; set; }
-        public bool Veg { get; set; } = true;
     }
 
     internal class QuinoaSalad : Vegetarian
@@ -31,7 +28,6 @@ namespace TheRestaurant.Food
         {
             Name = "Tomato soup";
             Price = 119;
-            Lactose = true;
         }
     }
 
@@ -41,7 +37,6 @@ namespace TheRestaurant.Food
         {
             Name = "Falafel";
             Price = 129;
-            Gluten = true;
         }
     }
 }

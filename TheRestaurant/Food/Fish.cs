@@ -11,9 +11,6 @@ namespace TheRestaurant.Food
     {
         public string Name { get; set; }
         public int Price { get; set; }
-        public bool Lactose { get; set; }
-        public bool Gluten { get; set; }
-        public bool Veg { get; set; }
     }
 
     internal class Oyster : Fish
@@ -30,7 +27,6 @@ namespace TheRestaurant.Food
         {
             Name = "Rainbow salmon";
             Price = 199;
-            Lactose = true;
         }
     }
     internal class FishAndChips : Fish
@@ -39,7 +35,6 @@ namespace TheRestaurant.Food
         {
             Name = "Fish and chips";
             Price = 139;
-            Gluten = true;
         }
     }
 }

@@ -10,8 +10,5 @@ namespace TheRestaurant.Interface
     {
         public string Name { get; set; }
         public int Price { get; set; }
-        public bool Lactose { get; set; }
-        public bool Gluten { get; set; }
-        public bool Veg { get; set; }
     }
 }

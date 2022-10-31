@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheRestaurant.Interface;
 
-namespace TheRestaurant.Person_Objects
+namespace TheRestaurant.Person
 {
     public class Person : IPerson
     {
@@ -15,7 +15,7 @@ namespace TheRestaurant.Person_Objects
         public Person()
         {
             Name = Helpers.GetName();
-            
+
         }
 
     }

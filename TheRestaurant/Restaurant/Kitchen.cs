@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheRestaurant.Restaurant_Objects
+namespace TheRestaurant.Restaurant
 {
-    internal class Table
+    internal class Kitchen
     {
     }
 }
