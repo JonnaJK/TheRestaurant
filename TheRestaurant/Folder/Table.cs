@@ -13,6 +13,8 @@ namespace TheRestaurant.Folder
         public int Number { get; set; }
         public string Name { get; set; }
         public bool Small { get; set; }
+        public bool IsDirty { get; set; }
+        public bool Occupied { get; set; }
         public int Score { get; set; }
 
         public Table(Random random, string name, bool small)
@@ -22,5 +24,18 @@ namespace TheRestaurant.Folder
             Small = small;
 
         }
+
+
+        internal static void Create(Random random, List<Table> tables, bool small, int amount)
+        {
+            int number = tables.Count;
+            for (int i = number + 1; i <= amount + number; i++)
+            {
+                string name = "Table " + i;
+                tables.Add(new Table(random, name, small));
+            }
+        }
+
+
     }
 }
