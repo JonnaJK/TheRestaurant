@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheRestaurant.Person;
 
 namespace TheRestaurant.Restaurant
 {
-    internal class Kitchen
+    internal class Order
     {
-        public List<Chef> Chefs { get; set; }
-
-        
-
+        public string Name { get; set; }
     }
 }

@@ -19,5 +19,11 @@ namespace TheRestaurant.Person
             Money = random.Next(100, 1000);
 
         }
+
+
+        private void ChooseGuests()
+        {
+
+        }
     }
 }
