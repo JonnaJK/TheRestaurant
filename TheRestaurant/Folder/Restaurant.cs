@@ -21,6 +21,55 @@ namespace TheRestaurant.Folder
 
         public void Run()
         {
+            CreateRestaurant();
+
+            while (true)
+            {
+                MatchTableForGuests();
+
+
+
+
+                Console.ReadKey();
+            }
+
+        }
+
+
+        // Check for suitable table for party of guests
+        private void MatchTableForGuests()
+        {
+            if (entrance.GroupOfGuests[0].Count <= 2)
+            {
+                var smallTableList = Tables.Where(x => x.Small).ToList();
+                if (smallTableList.Count > 0) { PlaceAtTable(smallTableList); }
+            }
+            else
+            {
+                var bigTableList = Tables.Where(x => x.Small == false).ToList();
+                if (bigTableList.Count > 0) { PlaceAtTable(bigTableList); }
+            }
+        }
+
+        // Place guests at available table
+        private void PlaceAtTable(List<Table> tables)
+        {
+
+            foreach (Table table in tables)
+            {
+                if (table.Occupied == false)
+                {
+
+                    table.Guests.AddRange(entrance.GroupOfGuests[0]);
+                    entrance.GroupOfGuests.RemoveAt(0);
+                    table.Occupied = true;
+                    break;
+                }
+
+            }
+        }
+        private void CreateRestaurant()
+        {
             // Creates guests and placed them in groups, a list of lists
             Guest.ChooseGuests(80, _random, entrance.GroupOfGuests);
 
@@ -32,34 +81,6 @@ namespace TheRestaurant.Folder
             // Creates small and big tables
             Table.Create(_random, Tables, true, 5);
             Table.Create(_random, Tables, false, 5);
-        }
-
-        private void CheckPlaceGuest()
-        {
-            
-            foreach (Table table in Tables)
-            {
-                if (entrance.GroupOfGuests.Count <= 2)
-                {
-                    if (table.Occupied == false && table.Small == true)
-                    {
-                        table.Guests.AddRange(entrance.GroupOfGuests[0]);
-                        entrance.GroupOfGuests.RemoveAt(0);
-                        table.Occupied = true;
-                        break;
-                    }
-                }
-                else if (entrance.GroupOfGuests.Count > 2)
-                {
-                    if (table.Occupied == false && table.Small == false)
-                    {
-                        table.Guests.AddRange(entrance.GroupOfGuests[0]);
-                        entrance.GroupOfGuests.RemoveAt(0);
-                        table.Occupied = true;
-                        break;
-                    }
-                }
-            }
         }
 
 
