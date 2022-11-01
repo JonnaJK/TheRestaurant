@@ -3,32 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheRestaurant.Person;
 
-namespace TheRestaurant.Restaurant
+namespace TheRestaurant.Folder
 {
-    internal class TheRestaurant
+    internal class Restaurant
     {
         public List<Table> Tables { get; set; } = new List<Table>(10);
-
-        
-
-
-
+        public Entrance Entrance { get; set; }
 
 
         public void Run()
         {
 
-            DrawRestaurant();
-
-
-
-
-
+            Guest.ChooseGuests();
 
         }
-
-
 
         private void CheckFreeTable()
         {

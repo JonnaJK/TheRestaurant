@@ -1,7 +1,7 @@
 ﻿using TheRestaurant.Food;
 using TheRestaurant.Interface;
 using TheRestaurant.Person;
-using TheRestaurant.Restaurant;
+using TheRestaurant.Folder;
 
 namespace TheRestaurant
 {
@@ -10,7 +10,8 @@ namespace TheRestaurant
         static void Main(string[] args)
         {
 
-            
+            Restaurant restaurant = new();
+            restaurant.Run();
 
 
         //    Random random = new Random();

@@ -11,6 +11,7 @@ namespace TheRestaurant.Food
     {
         public string Name { get; set; }
         public int Price { get; set; }
+        public int Points { get; set; }
     }
 
     internal class Oyster : Fish

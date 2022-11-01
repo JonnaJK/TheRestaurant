@@ -5,13 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using TheRestaurant.Person;
 
-namespace TheRestaurant.Restaurant
+namespace TheRestaurant.Folder
 {
-    internal class Kitchen
+    internal class Entrance
     {
-        public List<Chef> Chefs { get; set; }
-
-        
+        public List<List<Guest>> Guests { get; set; } = new List<List<Guest>>();
 
     }
 }
