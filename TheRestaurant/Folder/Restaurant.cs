@@ -9,14 +9,15 @@ namespace TheRestaurant.Folder
 {
     internal class Restaurant
     {
+        private readonly Random _random = new Random();
         public List<Table> Tables { get; set; } = new List<Table>(10);
-        public Entrance Entrance { get; set; }
+        public Entrance Entrance { get; set; } = new Entrance();
 
 
         public void Run()
         {
-
-            Guest.ChooseGuests();
+            //Guest guest = new Guest(_random);
+            Guest.ChooseGuests(80, _random, Entrance.GroupOfGuests);
 
         }
 

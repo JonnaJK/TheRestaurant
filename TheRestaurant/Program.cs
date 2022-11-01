@@ -44,7 +44,7 @@ namespace TheRestaurant
         //    IFood tomatosoup = new TomatoSoup(); // varför IFood?
         //    TomatoSoup tomatoSoup = new();       // och inte detta?
 
-        //}
+        }
 
 
     }

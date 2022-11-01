@@ -9,7 +9,12 @@ namespace TheRestaurant.Folder
 {
     internal class Entrance
     {
-        public List<List<Guest>> Guests { get; set; } = new List<List<Guest>>();
+        public List<List<Guest>> GroupOfGuests { get; set; }
+
+        public Entrance()
+        {
+            GroupOfGuests = new List<List<Guest>>();
+        }
 
     }
 }

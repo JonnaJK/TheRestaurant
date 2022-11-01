@@ -42,6 +42,8 @@ namespace TheRestaurant.Person
                     }
                     amountOfGuests = 0;
                 }
+
+                groups.Add(group);
             }
         }
     }
