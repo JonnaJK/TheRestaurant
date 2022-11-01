@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheRestaurant.Person
+namespace TheRestaurant.Persons
 {
     internal class Guest : Person
     {
@@ -21,20 +21,20 @@ namespace TheRestaurant.Person
 
         internal static void ChooseGuests(int amountOfGuests, Random random, List<List<Guest>> groups)
         {
-            while(amountOfGuests > 0)
+            while (amountOfGuests > 0)
             {
                 List<Guest> group = new();
 
-                if(amountOfGuests >= 4)
+                if (amountOfGuests >= 4)
                 {
                     int number = random.Next(1, 5);
-                    for(int i = 0; i < number; i++)
+                    for (int i = 0; i < number; i++)
                     {
                         group.Add(new Guest(random));
                     }
                     amountOfGuests -= number;
                 }
-                else 
+                else
                 {
                     for (int i = amountOfGuests; i > 0; i--)
                     {

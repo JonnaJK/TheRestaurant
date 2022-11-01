@@ -3,22 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TheRestaurant.Person;
+using TheRestaurant.Persons;
 
 namespace TheRestaurant.Folder
 {
     internal class Restaurant
     {
-        private readonly Random _random = new Random();
         public List<Table> Tables { get; set; } = new List<Table>(10);
         public Entrance Entrance { get; set; } = new Entrance();
+        public List<Waiter> Waiters { get; set; } = new List<Waiter>();
+        public List<Chef> Chefs { get; set; } = new List<Chef>();
 
+        private readonly Random _random = new Random();
+
+        //public Restaurant(int smallTables, int bigTables)
+        //{
+            
+        //}
 
         public void Run()
         {
-            //Guest guest = new Guest(_random);
+            // Creates guests and placed them in groups, a list of lists
             Guest.ChooseGuests(80, _random, Entrance.GroupOfGuests);
 
+            // Creates chefs and waiters in restaurant
+            Person.Create(_random, Chefs, 5);
+            Person.Create(_random, Waiters, 3);
         }
 
         private void CheckFreeTable()

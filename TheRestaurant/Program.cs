@@ -1,6 +1,6 @@
 ﻿using TheRestaurant.Food;
 using TheRestaurant.Interface;
-using TheRestaurant.Person;
+using TheRestaurant.Persons;
 using TheRestaurant.Folder;
 
 namespace TheRestaurant
