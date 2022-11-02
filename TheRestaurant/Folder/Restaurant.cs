@@ -31,10 +31,12 @@ namespace TheRestaurant.Folder
 
             while (true)
             {
-                MatchTableForGuests();
 
-
-                CheckIfHasOrdered();
+                foreach (Waiter waiter in Waiters)
+                {
+                    MatchTableForGuests();
+                    CheckIfHasOrdered(waiter);
+                }
 
 
 
@@ -43,7 +45,8 @@ namespace TheRestaurant.Folder
 
         }
 
-        private void CheckIfHasOrdered()
+        
+        private void CheckIfHasOrdered(Waiter waiter)
         {
             foreach (Table table in Tables)
             {
@@ -51,21 +54,29 @@ namespace TheRestaurant.Folder
                 {
                     foreach (var guest in table.Guests)
                     {
-                        TakeOrder(guest, _random);
+                        TakeOrder(guest, _random, waiter);
                     }
                     break;
                 }
             }
         }
 
-        private void TakeOrder(Guest guest, Random random)
+        // Check for vegetarians, they dont eat meat or fish. The rest can eat anything. Waiter takes order
+        private void TakeOrder(Guest guest, Random random, Waiter waiter)
         {
+            int index = 0;
             if (guest.IsVegetarian)
             {
                 var vegetarianFood = Menu.Where(x => x.IsVegetarian).ToList();
-                int index = random.Next(vegetarianFood.Count);
-
+                index = random.Next(vegetarianFood.Count);
+                waiter.Order.Add(vegetarianFood[index]);
             }
+            else
+            {
+                index = random.Next(Menu.Count);
+                waiter.Order.Add(Menu[index]);
+            }
+
         }
 
 
@@ -92,7 +103,7 @@ namespace TheRestaurant.Folder
             {
                 if (table.Occupied == false)
                 {
-
+                    // Skicka med en waiter från entré till bord
                     table.Guests.AddRange(entrance.GroupOfGuests[0]);
                     entrance.GroupOfGuests.RemoveAt(0);
                     table.Occupied = true;

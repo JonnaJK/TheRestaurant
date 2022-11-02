@@ -31,7 +31,8 @@ namespace TheRestaurant.Foods
             menu.Add(new Food("Meat 3", 123, false));
             menu.Add(new Food("Fish 1", 123, false));
             menu.Add(new Food("Fish 2", 123, false));
-            menu.Add(new Food("Fish 3", 123, false));
+            menu.Add(new Food("Fish 3", 123, false));       
+            menu.Add(new Food("Vegetarian 4", 123, true));
         }
     }
 }
