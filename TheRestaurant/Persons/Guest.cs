@@ -11,11 +11,17 @@ namespace TheRestaurant.Persons
     {
         public int Money { get; set; }
         public int Satisfied { get; set; }
-
+        public bool IsVegetarian { get; set; }
 
         public Guest(Random random)
         {
             Money = random.Next(100, 1000);
+
+            int probability = random.Next(101);
+            if (probability > 90)
+            {
+                IsVegetarian = true;
+            }
         }
 
 

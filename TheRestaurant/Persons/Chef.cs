@@ -13,7 +13,7 @@ namespace TheRestaurant.Persons
 
         public Chef(Random random)
         {
-            int probability = random.Next(100);
+            int probability = random.Next(101);
             if (probability > 50)
             {
                 IsCompetent = true;

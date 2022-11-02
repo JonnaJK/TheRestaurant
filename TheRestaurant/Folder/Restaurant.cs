@@ -1,19 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheRestaurant.Interface;
 using TheRestaurant.Persons;
+using TheRestaurant.Foods;
 
 namespace TheRestaurant.Folder
 {
     internal class Restaurant
     {
         public List<Table> Tables { get; set; } = new List<Table>();
+        //public List<Dictionary<string, Table>> Tables { get; set; }
         public Kitchen Kitchen { get; set; } = new Kitchen();
         //public Entrance Entrance { get; set; } = new Entrance();
         public List<Waiter> Waiters { get; set; } = new List<Waiter>();
         public List<Chef> Chefs { get; set; } = new List<Chef>();
+        public List<Food> Menu { get; set; } = new();
 
         private readonly Random _random = new Random();
         private Entrance entrance = new();
@@ -22,17 +27,45 @@ namespace TheRestaurant.Folder
         public void Run()
         {
             CreateRestaurant();
+            Food.CreateMenu(Menu);
 
             while (true)
             {
                 MatchTableForGuests();
 
 
+                CheckIfHasOrdered();
+
 
 
                 Console.ReadKey();
             }
 
+        }
+
+        private void CheckIfHasOrdered()
+        {
+            foreach (Table table in Tables)
+            {
+                if (table.HasOrdered is false)
+                {
+                    foreach (var guest in table.Guests)
+                    {
+                        TakeOrder(guest, _random);
+                    }
+                    break;
+                }
+            }
+        }
+
+        private void TakeOrder(Guest guest, Random random)
+        {
+            if (guest.IsVegetarian)
+            {
+                var vegetarianFood = Menu.Where(x => x.IsVegetarian).ToList();
+                int index = random.Next(vegetarianFood.Count);
+
+            }
         }
 
 
