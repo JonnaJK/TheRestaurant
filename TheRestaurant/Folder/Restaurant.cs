@@ -7,17 +7,16 @@ using System.Threading.Tasks;
 using TheRestaurant.Interface;
 using TheRestaurant.Persons;
 using TheRestaurant.Foods;
+using System.Diagnostics.Metrics;
 
 namespace TheRestaurant.Folder
 {
     internal class Restaurant
     {
         public List<Table> Tables { get; set; } = new List<Table>();
-        //public List<Dictionary<string, Table>> Tables { get; set; }
         public Kitchen Kitchen { get; set; } = new Kitchen();
-        //public Entrance Entrance { get; set; } = new Entrance();
         public List<Waiter> Waiters { get; set; } = new List<Waiter>();
-        public List<Chef> Chefs { get; set; } = new List<Chef>();
+        //public List<Chef> Chefs { get; set; } = new List<Chef>();
         public List<Food> Menu { get; set; } = new();
 
         private readonly Random _random = new Random();
@@ -36,45 +35,94 @@ namespace TheRestaurant.Folder
                 {
                     MatchTableForGuests();
                     CheckIfHasOrdered(waiter);
+                    DropOffOrder(waiter);
+                }
+
+                foreach (Chef chef in Kitchen.Chefs)
+                {
+                    CookFood(chef);
                 }
 
 
 
-                Console.ReadKey();
+                //Console.ReadKey();
             }
 
         }
 
-        
+        private void CookFood(Chef chef)
+        {
+            if (Kitchen.HasOrders == true && chef.HasOrder == false)
+            {
+                foreach (KeyValuePair<string, List<Food>> order in Kitchen.InOrders)
+                {
+                    chef.Order.Add(order.Key, order.Value);
+                    Kitchen.InOrders.Remove(order.Key);
+                    chef.HasOrder = true;
+                    break;
+                }
+            }
+            if (chef.HasOrder == true)
+            {
+                chef.Counter++;
+            }
+            if (chef.Counter >= 10)
+            {
+                foreach (KeyValuePair<string, List<Food>> order in chef.Order)
+                {
+                    Kitchen.OutOrders.Add(order.Key, order.Value);
+                    chef.Order.Clear();
+                    chef.HasOrder = false;
+                    chef.Counter = 0;
+                }
+            }
+        }
+
+        private void DropOffOrder(Waiter waiter) // Put Clear() outside of the foreach, and give the waiter the ability to 
+        {                                        // take mulitple table orders to the kitchen at once.
+            if (waiter.HasOrder)
+            {
+                foreach (KeyValuePair<string, List<Food>> order in waiter.Order)
+                {
+                    Kitchen.InOrders.Add(order.Key, order.Value);
+                    Kitchen.HasOrders = true;
+                    waiter.Order.Clear();
+                }
+            }
+        }
+
         private void CheckIfHasOrdered(Waiter waiter)
         {
             foreach (Table table in Tables)
             {
-                if (table.HasOrdered is false)
+                if (table.HasOrdered is false && table.Guests.Count > 0 && waiter.HasOrder is false)
                 {
                     foreach (var guest in table.Guests)
                     {
-                        TakeOrder(guest, _random, waiter);
+                        TakeOrder(guest, _random, table);
                     }
+                    waiter.Order.Add(table.Name, table.Order);
+                    table.HasOrdered = true;
+                    waiter.HasOrder = true;
                     break;
                 }
             }
         }
 
         // Check for vegetarians, they dont eat meat or fish. The rest can eat anything. Waiter takes order
-        private void TakeOrder(Guest guest, Random random, Waiter waiter)
+        private void TakeOrder(Guest guest, Random random, Table table)
         {
             int index = 0;
             if (guest.IsVegetarian)
             {
                 var vegetarianFood = Menu.Where(x => x.IsVegetarian).ToList();
                 index = random.Next(vegetarianFood.Count);
-                waiter.Order.Add(vegetarianFood[index]);
+                table.Order.Add(vegetarianFood[index]);
             }
             else
             {
                 index = random.Next(Menu.Count);
-                waiter.Order.Add(Menu[index]);
+                table.Order.Add(Menu[index]);
             }
 
         }
@@ -98,7 +146,6 @@ namespace TheRestaurant.Folder
         // Place guests at available table
         private void PlaceAtTable(List<Table> tables)
         {
-
             foreach (Table table in tables)
             {
                 if (table.Occupied == false)
@@ -109,7 +156,6 @@ namespace TheRestaurant.Folder
                     table.Occupied = true;
                     break;
                 }
-
             }
         }
         private void CreateRestaurant()
@@ -130,7 +176,6 @@ namespace TheRestaurant.Folder
 
         public static void DrawRestaurant()
         {
-
             Console.SetCursorPosition(0, 0);
             Console.WriteLine("┌" + "".PadRight(100, '─') + "┐");
 
@@ -145,7 +190,6 @@ namespace TheRestaurant.Folder
                 Console.WriteLine();
             }
             Console.WriteLine("└" + "".PadRight(100, '─') + "┘");
-
         }
     }
 }

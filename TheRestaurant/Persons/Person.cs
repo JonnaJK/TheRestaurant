@@ -13,6 +13,8 @@ namespace TheRestaurant.Persons
         public string Name { get; set; }
         public int Counter { get; set; }
 
+        // Kolla ifall vi kan lägga till en bool HasOrder - DRY! - Väntetiden(service)
+
         public Person()
         {
             Name = Helpers.GetName();

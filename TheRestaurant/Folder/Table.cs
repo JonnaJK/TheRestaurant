@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheRestaurant.Foods;
 using TheRestaurant.Persons;
 
 namespace TheRestaurant.Folder
@@ -10,6 +11,7 @@ namespace TheRestaurant.Folder
     internal class Table
     {
         public List<Guest> Guests { get; set; } = new List<Guest> { };
+        public List<Food> Order { get; set; } = new List<Food> { };
         public int Number { get; set; }
         public string Name { get; set; }
         public bool Small { get; set; }
