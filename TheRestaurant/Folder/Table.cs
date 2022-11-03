@@ -12,19 +12,20 @@ namespace TheRestaurant.Folder
     {
         public List<Guest> Guests { get; set; } = new List<Guest> { };
         public List<Food> Order { get; set; } = new List<Food> { };
-        public int Number { get; set; }
         public string Name { get; set; }
         public bool Small { get; set; }
         public bool IsDirty { get; set; }
         public bool Occupied { get; set; }
         public bool HasOrdered { get; set; }
         public bool WaitingForFood { get; set; }
-        public int Score { get; set; }
+        public int PlacementScore { get; set; }
+        public int WaitingTimeScore { get; set; }
+        public int EatingFoodCounter { get; set; }
 
         public Table(Random random, string name, bool small)
         {
             Name = name;
-            Score = random.Next(6);
+            PlacementScore = random.Next(6);
             Small = small;
 
         }

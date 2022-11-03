@@ -11,7 +11,7 @@ namespace TheRestaurant.Foods
     {
         public string Name { get; set; }
         public int Price { get; set; }
-        public int Points { get; set; }
+        public int QualityScore { get; set; }
         public bool IsVegetarian { get; set; }
 
         public Food(string name, int price, bool isVegetarian)

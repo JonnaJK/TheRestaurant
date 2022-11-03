@@ -33,9 +33,11 @@ namespace TheRestaurant.Folder
 
                 foreach (Waiter waiter in Waiters)
                 {
+                    DropOfFood(waiter);
                     MatchTableForGuests();
                     CheckIfHasOrdered(waiter);
                     DropOffOrder(waiter);
+                    PickUpOrder(waiter);
                 }
 
                 foreach (Chef chef in Kitchen.Chefs)
@@ -43,15 +45,78 @@ namespace TheRestaurant.Folder
                     CookFood(chef);
                 }
 
-
+                // If timer needed for table - place here
+                foreach (Table table in Tables)
+                {
+                    ServiceTimer(table);
+                    EatingTimer(table);
+                }
 
                 //Console.ReadKey();
             }
 
         }
 
+        private void DropOfFood(Waiter waiter)
+        {
+            // Leave food at table
+            if (waiter.OutOrder.Count > 0)
+            {
+                foreach (KeyValuePair<string, List<Food>> foods in waiter.OutOrder)
+                {
+                    // result becomes same as table object that we want to find
+                    // Addrange line adds foodlist to tableOrder
+                    var result = Tables.Single(table => table.Name == foods.Key);
+                    result.Order.AddRange(foods.Value);
+                    waiter.OutOrder.Clear();
+                }
+            }
+        }
+
+        // Waiter picks up food from kitchen
+        private void PickUpOrder(Waiter waiter)
+        {
+            if (Kitchen.OutOrders.Count > 0)
+            {
+                foreach (KeyValuePair<string, List<Food>> order in Kitchen.OutOrders)
+                {
+                    waiter.OutOrder.Add(order.Key, order.Value);
+                    Kitchen.OutOrders.Remove(order.Key);
+                    break;  // If not break; one waiter takes every order from kitchen outorders (effective restaurant variant)
+                }
+                
+            }
+        }
+        // TIMER
+        private void EatingTimer(Table table)
+        {
+            if (table.WaitingForFood == false && table.HasOrdered == true)
+            {
+                // WaitingTimeScore++ now increases points longer the wait - backwardsthinking
+                table.EatingFoodCounter++;
+            }
+            if (table.EatingFoodCounter == 20)
+            {
+                // CheckoutMETHOD here (Table table)
+            }
+        }
+        // TIMER
+        private void ServiceTimer(Table table)
+        {
+            if (table.WaitingForFood == true)
+            {
+                // WaitingTimeScore++ now increases points longer the wait - backwardsthinking
+                table.WaitingTimeScore++;
+            }
+        }
+
+        /// <summary>
+        ///  Chef cooks meal for table for 10 turns and add points
+        /// </summary>
+        /// <param name="chef"></param> 
         private void CookFood(Chef chef)
         {
+            //Chef takes order
             if (Kitchen.HasOrders == true && chef.HasOrder == false)
             {
                 foreach (KeyValuePair<string, List<Food>> order in Kitchen.InOrders)
@@ -62,31 +127,40 @@ namespace TheRestaurant.Folder
                     break;
                 }
             }
+            //Chef cooks for 10 turns
             if (chef.HasOrder == true)
             {
                 chef.Counter++;
             }
-            if (chef.Counter >= 10)
+            //Chef puts cooked food in outOrders (kitchen window)
+            if (chef.Counter == 10)
             {
                 foreach (KeyValuePair<string, List<Food>> order in chef.Order)
                 {
+                    //Give score to each food in order
+                    foreach (Food food in order.Value)
+                    {
+                        food.QualityScore = chef.CompetenceLevel;
+                    }
                     Kitchen.OutOrders.Add(order.Key, order.Value);
                     chef.Order.Clear();
                     chef.HasOrder = false;
-                    chef.Counter = 0;
+                    chef.Counter = 0;                    
                 }
             }
         }
 
-        private void DropOffOrder(Waiter waiter) // Put Clear() outside of the foreach, and give the waiter the ability to 
-        {                                        // take mulitple table orders to the kitchen at once.
+        // Put Clear() outside of the foreach, and give the waiter the ability
+        // to take mulitple table orders to the kitchen at once.
+        private void DropOffOrder(Waiter waiter)
+        {
             if (waiter.HasOrder)
             {
-                foreach (KeyValuePair<string, List<Food>> order in waiter.Order)
+                foreach (KeyValuePair<string, List<Food>> order in waiter.InOrder)
                 {
                     Kitchen.InOrders.Add(order.Key, order.Value);
                     Kitchen.HasOrders = true;
-                    waiter.Order.Clear();
+                    waiter.InOrder.Clear();
                 }
             }
         }
@@ -101,8 +175,9 @@ namespace TheRestaurant.Folder
                     {
                         TakeOrder(guest, _random, table);
                     }
-                    waiter.Order.Add(table.Name, table.Order);
+                    waiter.InOrder.Add(table.Name, table.Order);
                     table.HasOrdered = true;
+                    table.WaitingForFood = true;
                     waiter.HasOrder = true;
                     break;
                 }
@@ -158,6 +233,8 @@ namespace TheRestaurant.Folder
                 }
             }
         }
+
+        // Create Persons and Tables
         private void CreateRestaurant()
         {
             // Creates guests and placed them in groups, a list of lists
@@ -173,7 +250,7 @@ namespace TheRestaurant.Folder
             Table.Create(_random, Tables, false, 5);
         }
 
-
+        // GUI
         public static void DrawRestaurant()
         {
             Console.SetCursorPosition(0, 0);

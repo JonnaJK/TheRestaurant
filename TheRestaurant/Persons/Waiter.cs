@@ -13,7 +13,8 @@ namespace TheRestaurant.Persons
         //public List<Food> Order { get; set; } = new List<Food>();
 
         // IF THIS DOESNT WORK, use string insted of table.
-        public Dictionary<string, List<Food>> Order { get; set; } = new();
+        public Dictionary<string, List<Food>> InOrder { get; set; } = new();
+        public Dictionary<string, List<Food>> OutOrder { get; set; } = new();
         public bool HasOrder { get; set; }
 
     }
