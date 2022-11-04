@@ -18,5 +18,15 @@ namespace TheRestaurant.Persons
         public bool HasOrder { get; set; }
         public bool HasFoodToDeliver { get; set; }
         public bool CleaningTable { get; set; }
+
+        public int ServiceScore { get; set; }
+
+
+        public Waiter(Random _random)
+        {
+            ServiceScore = _random.Next(1, 6);
+        }
     }
+
+
 }

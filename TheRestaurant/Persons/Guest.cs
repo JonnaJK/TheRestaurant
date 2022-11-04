@@ -14,6 +14,7 @@ namespace TheRestaurant.Persons
         public int Satisfied { get; set; }
         public bool IsVegetarian { get; set; }
         public Food MyMeal { get; set; }
+        public int Tips { get; set; }
 
         public Guest(Random random)
         {

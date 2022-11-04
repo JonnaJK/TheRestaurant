@@ -20,6 +20,9 @@ namespace TheRestaurant.Folder
         //public List<Chef> Chefs { get; set; } = new List<Chef>()
         private readonly Random _random = new Random();
         private Entrance entrance = new();
+        internal readonly int _timeToCookFood = 10;
+        internal readonly int timeToEatFood = 20;
+        internal readonly int timeToCleanTable = 3;
 
 
         public void Run()
@@ -53,6 +56,7 @@ namespace TheRestaurant.Folder
                     EatingTimer(table);
                 }
                 //Console.ReadKey();
+                // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
             }
         }
 
@@ -63,10 +67,11 @@ namespace TheRestaurant.Folder
             {
                 foreach (KeyValuePair<string, List<Food>> foods in waiter.OutOrder)
                 {
-                    // result becomes same as table object that we want to find
+                    // resultTable becomes same as table object that we want to find
                     // Addrange line adds foodlist to tableOrder
-                    var result = Tables.Single(table => table.Name == foods.Key);
-                    result.Order.AddRange(foods.Value);
+                    var resultTable = Tables.Single(table => table.Name == foods.Key);
+                    resultTable.Order.AddRange(foods.Value);
+                    resultTable.ServiceScore += waiter.ServiceScore;
                     waiter.OutOrder = new();
                     waiter.HasOrder = false;
                 }
@@ -115,6 +120,7 @@ namespace TheRestaurant.Folder
                         TakeOrder(guest, _random, table);
                     }
                     waiter.InOrder.Add(table.Name, table.Order);
+                    table.ServiceScore += waiter.ServiceScore;
                     table.Order = new();
                     table.HasOrdered = true;
                     table.WaitingForFood = true;
@@ -189,13 +195,13 @@ namespace TheRestaurant.Folder
                     break;
                 }
             }
-            //Chef cooks for 10 turns
+            //Chef cooks for TimeToCookFood(10) turns 
             if (chef.HasOrder == true)
             {
                 chef.Counter++;
             }
             //Chef puts cooked food in outOrders (kitchen window)
-            if (chef.Counter == 10)
+            if (chef.Counter == TimeToCookFood)
             {
                 foreach (KeyValuePair<string, List<Food>> order in chef.Order)
                 {
@@ -230,18 +236,10 @@ namespace TheRestaurant.Folder
                 // WaitingTimeScore++ now increases points longer the wait - backwardsthinking
                 table.EatingFoodCounter++;
             }
-            if (table.EatingFoodCounter == 20)
+            // TimeToEatFood = 20
+            if (table.EatingFoodCounter == TimeToEatFood)
             {
                 Checkout(table);
-                table.IsDirty = true;
-                foreach (Waiter waiter in Waiters)
-                {
-                    if (waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
-                    {
-                        waiter.CleaningTable = true;
-                        break;
-                    }
-                }
             }
         }
 
@@ -249,19 +247,36 @@ namespace TheRestaurant.Folder
         {
             // Pay();
             // Newsfeed();
+            table.Guests = new();
+            table.IsDirty = true;
+            table.EatingFoodCounter = 0;
+            table.HasOrdered = false;
+            foreach (Waiter waiter in Waiters)
+            {
+                if (waiter.HasOrder is false && waiter.HasFoodToDeliver is false && waiter.CleaningTable is false)
+                {
+                    table.ServiceScore += waiter.ServiceScore;
+                    waiter.CleaningTable = true;
+                    break;
+                }
+            }
         }
 
         private void CleanTable(Waiter waiter)
         {
             foreach (Table table in Tables)
             {
-                if (table.IsDirty == true)
+                if (table.IsDirty == true && waiter.CleaningTable == true)
                 {
                     waiter.Counter++;
                 }
-                if (waiter.Counter == 3)
+                // TimeToCleanTable = 3
+                if (waiter.Counter == TimeToCleanTable)
                 {
                     waiter.CleaningTable = false;
+                    table.IsDirty = false;
+
+                    table.Occupied = false;
                 }
             }
         }
