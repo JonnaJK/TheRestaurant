@@ -16,6 +16,6 @@ namespace TheRestaurant.Persons
         public Dictionary<string, List<Food>> InOrder { get; set; } = new();
         public Dictionary<string, List<Food>> OutOrder { get; set; } = new();
         public bool HasOrder { get; set; }
-
+        public bool HasFoodToDeliver { get; set; }
     }
 }

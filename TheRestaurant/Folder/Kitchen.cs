@@ -14,8 +14,6 @@ namespace TheRestaurant.Folder
         public Dictionary<string, List<Food>> InOrders { get; set; } = new();
         public Dictionary<string, List<Food>> OutOrders { get; set; } = new();
         public bool HasOrders { get; set; }
-
-
-
+        public bool HasFoodToPickUp { get; set; }
     }
 }
