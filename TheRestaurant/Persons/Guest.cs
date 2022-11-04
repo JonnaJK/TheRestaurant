@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TheRestaurant.Foods;
 
 namespace TheRestaurant.Persons
 {
@@ -12,6 +13,7 @@ namespace TheRestaurant.Persons
         public int Money { get; set; }
         public int Satisfied { get; set; }
         public bool IsVegetarian { get; set; }
+        public Food MyMeal { get; set; }
 
         public Guest(Random random)
         {
