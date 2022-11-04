@@ -21,8 +21,8 @@ namespace TheRestaurant.Folder
         private readonly Random _random = new Random();
         private Entrance entrance = new();
         internal readonly int _timeToCookFood = 10;
-        internal readonly int timeToEatFood = 20;
-        internal readonly int timeToCleanTable = 3;
+        internal readonly int _timeToEatFood = 20;
+        internal readonly int _timeToCleanTable = 3;
 
 
         public void Run()
@@ -201,7 +201,7 @@ namespace TheRestaurant.Folder
                 chef.Counter++;
             }
             //Chef puts cooked food in outOrders (kitchen window)
-            if (chef.Counter == TimeToCookFood)
+            if (chef.Counter == _timeToCookFood)
             {
                 foreach (KeyValuePair<string, List<Food>> order in chef.Order)
                 {
@@ -237,7 +237,7 @@ namespace TheRestaurant.Folder
                 table.EatingFoodCounter++;
             }
             // TimeToEatFood = 20
-            if (table.EatingFoodCounter == TimeToEatFood)
+            if (table.EatingFoodCounter == _timeToEatFood)
             {
                 Checkout(table);
             }
@@ -271,7 +271,7 @@ namespace TheRestaurant.Folder
                     waiter.Counter++;
                 }
                 // TimeToCleanTable = 3
-                if (waiter.Counter == TimeToCleanTable)
+                if (waiter.Counter == _timeToCleanTable)
                 {
                     waiter.CleaningTable = false;
                     table.IsDirty = false;
