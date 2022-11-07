@@ -23,6 +23,8 @@ namespace TheRestaurant.Folder
         public int EatingFoodCounter { get; set; }
         public List<Food> Menu { get; set; } = new();
         public int ServiceScore { get; set; }
+        public List<Dictionary<string, double>> SummaryGuest { get; set; } = new();
+        public double OverallScore { get; set; }
 
         public Table(Random random, string name, bool small)
         {
