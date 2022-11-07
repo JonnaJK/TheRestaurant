@@ -15,6 +15,7 @@ namespace TheRestaurant.Persons
         public bool IsVegetarian { get; set; }
         public Food MyMeal { get; set; }
         public double Tips { get; set; }
+        public double Score { get; set; }
 
         public Guest(Random random)
         {

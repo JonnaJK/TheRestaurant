@@ -18,15 +18,18 @@ namespace TheRestaurant
         private static int _serviceScore;
         private static readonly int _maxOverallScore = 20;
 
+        internal static void ShowReceipt()
+        {
 
+        }
         internal static void Run(Table table, Restaurant restaurant)
         {
             Pointsystem(table, restaurant);
             foreach (Guest guest in table.Guests)
             {
-                guest.Tips = OverallScore();
+                guest.Score = OverallScore();
                 Tips(guest, table);
-                table.OverallScore += guest.Tips;
+                table.OverallScore += guest.Score;
             }
             table.OverallScore /= table.Guests.Count;
             RecieptAction(table);
@@ -38,57 +41,55 @@ namespace TheRestaurant
             {
                 if (guest.Money >= guest.MyMeal.Price)
                 {
-                    if (table.SummaryGuest.ContainsKey(guest.Name))
-                    {
-                        var pricePerGuest = table.SummaryGuest[guest.Name];
-                        if (guest.Money >= pricePerGuest)
-                        {
-                            //BETALA
-                            restaurant.CashRegister += pricePerGuest;
-                            guest.Money -= pricePerGuest;
-                        }
-                        else
-                        {
-                            //DISKA
-                        }
+                    var totalGuestPrice = guest.Tips + guest.MyMeal.Price;
 
-                        // Eventuellt kommer det inte gå att ta bort då vi är i en foreach..
-                        table.SummaryGuest.Remove(guest.Name);
+                    if (guest.Money >= totalGuestPrice)
+                    {
+                        restaurant.CashRegister += totalGuestPrice;
+                        guest.Money -= totalGuestPrice;
                     }
+                    else
+                    {
+                        restaurant.CashRegister += guest.MyMeal.Price;
+                        guest.Money -= guest.MyMeal.Price;
+                    }
+                }
+                else
+                {
+                    restaurant.CashRegister += guest.Money;
+                    guest.Money -= guest.Money;
+                    table.Actions.Add($"{guest.Name} will have to wash the dishes because poor. ");
                 }
             }
         }
 
         private static void RecieptAction(Table table) // ev ta in gästens egna värde, istället för bordet, framtidssäkra
         {
-            if(table.OverallScore > _maxOverallScore * 0.8)
+            if (table.OverallScore > _maxOverallScore * 0.8)
             {
-                table.Action = "The guests are very happy with their overall experience";
+                table.Actions.Add("The guests are very happy with their overall experience. ");
             }
-            else if(table.OverallScore > _maxOverallScore * 0.6)
+            else if (table.OverallScore > _maxOverallScore * 0.6)
             {
-                table.Action = "The guests are content with their overall experience";
+                table.Actions.Add("The guests are content with their overall experience. ");
             }
-            else if(table.OverallScore > _maxOverallScore * 0.4)
+            else if (table.OverallScore > _maxOverallScore * 0.4)
             {
-                table.Action = "The guests are neutral with their overall experience";
+                table.Actions.Add("The guests are neutral with their overall experience. ");
             }
-            else if(table.OverallScore > _maxOverallScore * 0.2)
+            else if (table.OverallScore > _maxOverallScore * 0.2)
             {
-                table.Action = "The guests are dissatisfied with their overall experience";
+                table.Actions.Add("The guests are dissatisfied with their overall experience. ");
             }
             else
             {
-                table.Action = "The guests are extremely unhappy with their overall experience";
+                table.Actions.Add("The guests are extremely unhappy with their overall experience. ");
             }
         }
 
         private static void Tips(Guest guest, Table table)
         {
-            double percentTips = (guest.Tips / 100) + 1;
-            double priceWithTip = guest.MyMeal.Price * percentTips;
-
-            table.SummaryGuest.Add(guest.Name, priceWithTip);
+            guest.Tips = (guest.Score / 100) * guest.MyMeal.Price;
         }
 
         private static double OverallScore()
@@ -155,10 +156,6 @@ namespace TheRestaurant
             {
                 _serviceScore = 1;
             }
-
-            // Quality Score
-
-
         }
     }
 }

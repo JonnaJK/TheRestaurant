@@ -9,6 +9,7 @@ using TheRestaurant.Persons;
 using TheRestaurant.Foods;
 using System.Diagnostics.Metrics;
 using System.ComponentModel.Design;
+using System.Net.WebSockets;
 
 namespace TheRestaurant.Folder
 {
@@ -57,6 +58,41 @@ namespace TheRestaurant.Folder
                 }
                 //Console.ReadKey();
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
+
+                Actionlist();
+
+            }
+        }
+
+        private void Actionlist()
+        {
+            foreach (Table table in Tables)
+            {
+                Console.WriteLine("Namn: " + table.Name);
+                Console.WriteLine("Order: " + String.Join(", ", table.Order));
+                Console.WriteLine("Ockupado: " + table.Occupied);
+                Console.WriteLine("Tid att äta mat: " + table.EatingFoodCounter);
+                Console.WriteLine("Bordet har beställt: " + table.HasOrdered);
+                Console.WriteLine("Smutsigt bord: " + table.IsDirty);
+                Console.WriteLine("Totalpoäng för bordet: " + table.OverallScore);
+                Console.WriteLine(String.Join(", ", table.Actions));
+
+                foreach (Guest guest in table.Guests)
+                {
+
+                    Console.WriteLine();
+                    Console.WriteLine("Namn på gäst: " + guest.Name);
+                    Console.WriteLine("Pengar: " + guest.Money);
+                    Console.WriteLine("Vegetarian: " + guest.IsVegetarian);
+                    Console.WriteLine("Poäng/procent dricks: " + guest.Score);
+                    Console.WriteLine("Måltid: " + guest.MyMeal.Name);
+                    Console.WriteLine("Pris på måltid: " + guest.MyMeal.Price);
+                    Console.WriteLine("Dricks för måltid: " + guest.Tips);
+
+                    Console.ReadKey();
+                    Console.Clear();
+
+                }
             }
         }
 
@@ -81,16 +117,20 @@ namespace TheRestaurant.Folder
         // Check for suitable table for party of guests
         private void MatchTableForGuests()
         {
-            if (entrance.GroupOfGuests[0].Count <= 2)
+            if (entrance.GroupOfGuests.Count is not 0)
             {
-                var smallTableList = Tables.Where(x => x.Small).ToList();
-                if (smallTableList.Count > 0) { PlaceAtTable(smallTableList); }
+                if (entrance.GroupOfGuests[0].Count <= 2)
+                {
+                    var smallTableList = Tables.Where(x => x.Small).ToList();
+                    if (smallTableList.Count > 0) { PlaceAtTable(smallTableList); }
+                }
+                else
+                {
+                    var bigTableList = Tables.Where(x => x.Small == false).ToList();
+                    if (bigTableList.Count > 0) { PlaceAtTable(bigTableList); }
+                }
             }
-            else
-            {
-                var bigTableList = Tables.Where(x => x.Small == false).ToList();
-                if (bigTableList.Count > 0) { PlaceAtTable(bigTableList); }
-            }
+
         }
 
         // Place guests at available table
@@ -223,7 +263,6 @@ namespace TheRestaurant.Folder
         {
             if (table.WaitingForFood == true)
             {
-                // WaitingTimeScore++ now increases points longer the wait - backwardsthinking
                 table.WaitingTimeScore++;
             }
         }
@@ -289,7 +328,7 @@ namespace TheRestaurant.Folder
         private void CreateRestaurant()
         {
             // Creates guests and placed them in groups, a list of lists
-            Guest.ChooseGuests(80, _random, entrance.GroupOfGuests);
+            Guest.ChooseGuests(2, _random, entrance.GroupOfGuests);
 
             // Creates waiters in restaurant
             Person.Create(_random, Waiters, 3);
@@ -297,8 +336,8 @@ namespace TheRestaurant.Folder
             Person.Create(_random, Kitchen.Chefs, 5);
 
             // Creates small and big tables
-            Table.Create(_random, Tables, true, 5);
-            Table.Create(_random, Tables, false, 5);
+            Table.Create(_random, Tables, true, 1);
+            Table.Create(_random, Tables, false, 1);
         }
 
         // GUI

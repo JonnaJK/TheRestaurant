@@ -55,7 +55,7 @@ namespace TheRestaurant.Persons
         {
             for (int i = 0; i < numberOfWaiters; i++)
             {
-                waiters.Add(new Waiter());
+                waiters.Add(new Waiter(random));
             }
         }
 
