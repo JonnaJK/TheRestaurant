@@ -12,6 +12,8 @@ namespace TheRestaurant.Folder
     {
         public List<Guest> Guests { get; set; } = new List<Guest> { };
         public List<Food> Order { get; set; } = new List<Food> { };
+        public List<Food> Menu { get; set; } = new();
+        public Dictionary<string, double> SummaryGuest { get; set; } = new();
         public string Name { get; set; }
         public bool Small { get; set; }
         public bool IsDirty { get; set; }
@@ -21,10 +23,9 @@ namespace TheRestaurant.Folder
         public int PlacementScore { get; set; }
         public int WaitingTimeScore { get; set; }
         public int EatingFoodCounter { get; set; }
-        public List<Food> Menu { get; set; } = new();
         public int ServiceScore { get; set; }
-        public List<Dictionary<string, double>> SummaryGuest { get; set; } = new();
         public double OverallScore { get; set; }
+        public string Action { get; set; }
 
         public Table(Random random, string name, bool small)
         {

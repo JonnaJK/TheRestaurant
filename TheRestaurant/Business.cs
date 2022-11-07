@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TheRestaurant.Folder;
 using TheRestaurant.Foods;
+using TheRestaurant.Interface;
 using TheRestaurant.Persons;
 
 namespace TheRestaurant
@@ -17,9 +18,10 @@ namespace TheRestaurant
         private static int _serviceScore;
         private static readonly int _maxOverallScore = 20;
 
-        internal static void Run(Table table, Waiter waiter, Restaurant restaurant)
+
+        internal static void Run(Table table, Restaurant restaurant)
         {
-            Pointsystem(table, waiter, restaurant);
+            Pointsystem(table, restaurant);
             foreach (Guest guest in table.Guests)
             {
                 guest.Tips = OverallScore();
@@ -29,40 +31,64 @@ namespace TheRestaurant
             table.OverallScore /= table.Guests.Count;
             RecieptAction(table);
         }
+
+        internal static void Pay(Table table, Restaurant restaurant)
+        {
+            foreach (var guest in table.Guests)
+            {
+                if (guest.Money >= guest.MyMeal.Price)
+                {
+                    if (table.SummaryGuest.ContainsKey(guest.Name))
+                    {
+                        var pricePerGuest = table.SummaryGuest[guest.Name];
+                        if (guest.Money >= pricePerGuest)
+                        {
+                            //BETALA
+                            restaurant.CashRegister += pricePerGuest;
+                            guest.Money -= pricePerGuest;
+                        }
+                        else
+                        {
+                            //DISKA
+                        }
+
+                        // Eventuellt kommer det inte gå att ta bort då vi är i en foreach..
+                        table.SummaryGuest.Remove(guest.Name);
+                    }
+                }
+            }
+        }
+
         private static void RecieptAction(Table table) // ev ta in gästens egna värde, istället för bordet, framtidssäkra
         {
-            string action = "";
-
             if(table.OverallScore > _maxOverallScore * 0.8)
             {
-                action = "The guests are very happy with their overall experience";
+                table.Action = "The guests are very happy with their overall experience";
             }
             else if(table.OverallScore > _maxOverallScore * 0.6)
             {
-                action = "The guests are content with their overall experience";
+                table.Action = "The guests are content with their overall experience";
             }
             else if(table.OverallScore > _maxOverallScore * 0.4)
             {
-                action = "The guests are neutral with their overall experience";
+                table.Action = "The guests are neutral with their overall experience";
             }
             else if(table.OverallScore > _maxOverallScore * 0.2)
             {
-                action = "The guests are dissatisfied with their overall experience";
+                table.Action = "The guests are dissatisfied with their overall experience";
             }
             else
             {
-                action = "The guests are extremely unhappy with their overall experience";
+                table.Action = "The guests are extremely unhappy with their overall experience";
             }
         }
+
         private static void Tips(Guest guest, Table table)
         {
-            Dictionary<string, double> dicPriceWithTip = new();
-
             double percentTips = (guest.Tips / 100) + 1;
             double priceWithTip = guest.MyMeal.Price * percentTips;
 
-            dicPriceWithTip.Add(guest.Name, priceWithTip);
-            table.SummaryGuest.Add(dicPriceWithTip);
+            table.SummaryGuest.Add(guest.Name, priceWithTip);
         }
 
         private static double OverallScore()
@@ -71,7 +97,7 @@ namespace TheRestaurant
             return overallScore;
         }
 
-        private static void Pointsystem(Table table, Waiter waiter, Restaurant restaurant)
+        private static void Pointsystem(Table table, Restaurant restaurant)
         {
 
             // Waiting for food Score
@@ -134,7 +160,5 @@ namespace TheRestaurant
 
 
         }
-
-
     }
 }

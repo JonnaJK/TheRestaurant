@@ -17,7 +17,7 @@ namespace TheRestaurant.Folder
         public List<Table> Tables { get; set; } = new List<Table>();
         public Kitchen Kitchen { get; set; } = new Kitchen();
         public List<Waiter> Waiters { get; set; } = new List<Waiter>();
-        //public List<Chef> Chefs { get; set; } = new List<Chef>()
+        public double CashRegister { get; set; }
         private readonly Random _random = new Random();
         private Entrance entrance = new();
         internal readonly int _timeToCookFood = 10;
@@ -25,7 +25,7 @@ namespace TheRestaurant.Folder
         internal readonly int _timeToCleanTable = 3;
 
 
-        public void Run()
+        public void Run(Restaurant restaurant)
         {
             CreateRestaurant();
 
@@ -53,7 +53,7 @@ namespace TheRestaurant.Folder
                 foreach (Table table in Tables)
                 {
                     ServiceTimer(table);
-                    EatingTimer(table);
+                    EatingTimer(table, restaurant);
                 }
                 //Console.ReadKey();
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
@@ -229,7 +229,7 @@ namespace TheRestaurant.Folder
         }
 
         // TIMER
-        private void EatingTimer(Table table)
+        private void EatingTimer(Table table, Restaurant restaurant)
         {
             if (table.WaitingForFood == false && table.HasOrdered == true)
             {
@@ -239,13 +239,17 @@ namespace TheRestaurant.Folder
             // TimeToEatFood = 20
             if (table.EatingFoodCounter == _timeToEatFood)
             {
-                Checkout(table);
+                Checkout(table, restaurant);
             }
         }
 
-        private void Checkout(Table table)
+        private void Checkout(Table table, Restaurant restaurant)
         {
+            // TA BORT restaurant på något sätt
+            Business.Run(table, restaurant);
             // Pay();
+            Business.Pay(table, restaurant);
+
             // Newsfeed();
             table.Guests = new();
             table.IsDirty = true;

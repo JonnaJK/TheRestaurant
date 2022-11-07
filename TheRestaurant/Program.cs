@@ -11,7 +11,7 @@ namespace TheRestaurant
         {
 
             Restaurant restaurant = new();
-            restaurant.Run();
+            restaurant.Run(restaurant);
 
 
         //    Random random = new Random();
