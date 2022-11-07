@@ -26,6 +26,7 @@ namespace TheRestaurant.Persons
             {
                 IsVegetarian = true;
             }
+
         }
 
 

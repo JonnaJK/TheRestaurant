@@ -34,14 +34,32 @@ namespace TheRestaurant.Folder
             {
                 foreach (Waiter waiter in Waiters)
                 {
-                    DropOfFood(waiter);
-                    MatchTableForGuests();
-                    CheckIfHasOrdered(waiter);
-                    DropOffOrder(waiter);
-                    PickUpFoodFromKitchen(waiter);
                     if (waiter.CleaningTable)
                     {
                         CleanTable(waiter);
+                    }
+                    else
+                    {
+                        if (waiter.OutOrder.Count > 0)
+                        {
+                            DropOfFood(waiter);
+                        }
+                        else if (entrance.GroupOfGuests.Count is not 0 && Tables.Contains(smalltableblabla))
+                        {
+                            MatchTableForGuests(); // HÄR ÄR VI!
+                        }
+                        else if (waiter.HasOrder)
+                        {
+                            DropOffOrder(waiter);
+                        }
+                        else if (Kitchen.OutOrders.Count > 0 && waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
+                        {
+                            PickUpFoodFromKitchen(waiter);
+                        }
+                        else
+                        {
+                            CheckIfHasOrdered(waiter);
+                        }
                     }
                 }
 
@@ -75,62 +93,59 @@ namespace TheRestaurant.Folder
                 Console.WriteLine("Bordet har beställt: " + table.HasOrdered);
                 Console.WriteLine("Smutsigt bord: " + table.IsDirty);
                 Console.WriteLine("Totalpoäng för bordet: " + table.OverallScore);
+                Console.WriteLine("WaitingTimeScore: " + table.WaitingTimeScore);
+                Console.WriteLine("Waiting for food: " + table.WaitingForFood);
+                Console.WriteLine("ServiceScore: " + table.ServiceScore);
                 Console.WriteLine(String.Join(", ", table.Actions));
 
-                foreach (Guest guest in table.Guests)
-                {
+                //foreach (Guest guest in table.Guests)
+                //{
 
-                    Console.WriteLine();
-                    Console.WriteLine("Namn på gäst: " + guest.Name);
-                    Console.WriteLine("Pengar: " + guest.Money);
-                    Console.WriteLine("Vegetarian: " + guest.IsVegetarian);
-                    Console.WriteLine("Poäng/procent dricks: " + guest.Score);
-                    Console.WriteLine("Måltid: " + guest.MyMeal.Name);
-                    Console.WriteLine("Pris på måltid: " + guest.MyMeal.Price);
-                    Console.WriteLine("Dricks för måltid: " + guest.Tips);
+                //    Console.WriteLine();
+                //    Console.WriteLine("Namn på gäst: " + guest.Name);
+                //    Console.WriteLine("Pengar: " + guest.Money);
+                //    Console.WriteLine("Vegetarian: " + guest.IsVegetarian);
+                //    Console.WriteLine("Poäng/procent dricks: " + guest.Score);
+                //    Console.WriteLine("Måltid: " + guest.MyMeal);
+                //    Console.WriteLine("Pris på måltid: " + guest.MyMeal);
+                //    Console.WriteLine("Dricks för måltid: " + guest.Tips);
 
-                    Console.ReadKey();
-                    Console.Clear();
-
-                }
+                //}
             }
+            Console.ReadKey();
+            Console.Clear();
         }
 
         private void DropOfFood(Waiter waiter)
         {
             // Leave food at table
-            if (waiter.OutOrder.Count > 0)
+            foreach (KeyValuePair<string, List<Food>> foods in waiter.OutOrder)
             {
-                foreach (KeyValuePair<string, List<Food>> foods in waiter.OutOrder)
-                {
-                    // resultTable becomes same as table object that we want to find
-                    // Addrange line adds foodlist to tableOrder
-                    var resultTable = Tables.Single(table => table.Name == foods.Key);
-                    resultTable.Order.AddRange(foods.Value);
-                    resultTable.ServiceScore += waiter.ServiceScore;
-                    waiter.OutOrder = new();
-                    waiter.HasOrder = false;
-                }
+                // resultTable becomes same as table object that we want to find
+                // Addrange line adds foodlist to tableOrder
+                var resultTable = Tables.Single(table => table.Name == foods.Key);
+                resultTable.Order.AddRange(foods.Value);
+                resultTable.ServiceScore += waiter.ServiceScore;
+                waiter.OutOrder = new();
+                waiter.HasOrder = false;
+                resultTable.WaitingForFood = false;
             }
         }
 
         // Check for suitable table for party of guests
         private void MatchTableForGuests()
         {
-            if (entrance.GroupOfGuests.Count is not 0)
-            {
-                if (entrance.GroupOfGuests[0].Count <= 2)
-                {
-                    var smallTableList = Tables.Where(x => x.Small).ToList();
-                    if (smallTableList.Count > 0) { PlaceAtTable(smallTableList); }
-                }
-                else
-                {
-                    var bigTableList = Tables.Where(x => x.Small == false).ToList();
-                    if (bigTableList.Count > 0) { PlaceAtTable(bigTableList); }
-                }
-            }
+            var smallTableList = Tables.Where(x => x.Small).ToList();
+            var bigTableList = Tables.Where(x => x.Small == false).ToList();
 
+            if (entrance.GroupOfGuests[0].Count <= 2)
+            {
+                if (smallTableList.Count > 0) { PlaceAtTable(smallTableList); }
+            }
+            else
+            {
+                if (bigTableList.Count > 0) { PlaceAtTable(bigTableList); }
+            }
         }
 
         // Place guests at available table
@@ -193,14 +208,11 @@ namespace TheRestaurant.Folder
         // to take mulitple table orders to the kitchen at once.
         private void DropOffOrder(Waiter waiter)
         {
-            if (waiter.HasOrder)
+            foreach (KeyValuePair<string, List<Food>> order in waiter.InOrder)
             {
-                foreach (KeyValuePair<string, List<Food>> order in waiter.InOrder)
-                {
-                    Kitchen.InOrders.Add(order.Key, order.Value);
-                    waiter.InOrder = new();
-                    waiter.HasOrder = false;
-                }
+                Kitchen.InOrders.Add(order.Key, order.Value);
+                waiter.InOrder = new();
+                waiter.HasOrder = false;
             }
         }
 
@@ -312,14 +324,15 @@ namespace TheRestaurant.Folder
                 if (table.IsDirty == true && waiter.CleaningTable == true)
                 {
                     waiter.Counter++;
-                }
-                // TimeToCleanTable = 3
-                if (waiter.Counter == _timeToCleanTable)
-                {
-                    waiter.CleaningTable = false;
-                    table.IsDirty = false;
-
-                    table.Occupied = false;
+                    // TimeToCleanTable = 3
+                    if (waiter.Counter >= _timeToCleanTable)
+                    {
+                        waiter.CleaningTable = false;
+                        table.IsDirty = false;
+                        waiter.Counter = 0;
+                        table.Occupied = false;
+                    }
+                    break;
                 }
             }
         }
@@ -328,7 +341,7 @@ namespace TheRestaurant.Folder
         private void CreateRestaurant()
         {
             // Creates guests and placed them in groups, a list of lists
-            Guest.ChooseGuests(2, _random, entrance.GroupOfGuests);
+            Guest.ChooseGuests(80, _random, entrance.GroupOfGuests);
 
             // Creates waiters in restaurant
             Person.Create(_random, Waiters, 3);
@@ -336,8 +349,8 @@ namespace TheRestaurant.Folder
             Person.Create(_random, Kitchen.Chefs, 5);
 
             // Creates small and big tables
-            Table.Create(_random, Tables, true, 1);
-            Table.Create(_random, Tables, false, 1);
+            Table.Create(_random, Tables, true, 5);
+            Table.Create(_random, Tables, false, 5);
         }
 
         // GUI
