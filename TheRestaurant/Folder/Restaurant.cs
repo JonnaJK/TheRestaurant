@@ -19,11 +19,13 @@ namespace TheRestaurant.Folder
         public Kitchen Kitchen { get; set; } = new Kitchen();
         public List<Waiter> Waiters { get; set; } = new List<Waiter>();
         public double CashRegister { get; set; }
+        public double TipJar { get; set; }
         private readonly Random _random = new Random();
         private Entrance entrance = new();
         internal readonly int _timeToCookFood = 10;
         internal readonly int _timeToEatFood = 20;
         internal readonly int _timeToCleanTable = 3;
+
 
 
         public void Run(Restaurant restaurant)
@@ -34,6 +36,7 @@ namespace TheRestaurant.Folder
             {
                 foreach (Waiter waiter in Waiters)
                 {
+                    var freeTables = Tables.Where(x => !x.Occupied).ToList();
                     if (waiter.CleaningTable)
                     {
                         CleanTable(waiter);
@@ -44,9 +47,9 @@ namespace TheRestaurant.Folder
                         {
                             DropOfFood(waiter);
                         }
-                        else if (entrance.GroupOfGuests.Count is not 0 && Tables.Contains(smalltableblabla))
+                        else if (entrance.GroupOfGuests.Count is not 0 && freeTables.Count > 0)
                         {
-                            MatchTableForGuests(); // HÄR ÄR VI!
+                            MatchTableForGuests(freeTables);
                         }
                         else if (waiter.HasOrder)
                         {
@@ -96,8 +99,9 @@ namespace TheRestaurant.Folder
                 Console.WriteLine("WaitingTimeScore: " + table.WaitingTimeScore);
                 Console.WriteLine("Waiting for food: " + table.WaitingForFood);
                 Console.WriteLine("ServiceScore: " + table.ServiceScore);
+                Console.WriteLine("antal gäster i sällskap: " + table.Guests.Count);
                 Console.WriteLine(String.Join(", ", table.Actions));
-
+                Console.WriteLine("--------------------------------");
                 //foreach (Guest guest in table.Guests)
                 //{
 
@@ -112,6 +116,12 @@ namespace TheRestaurant.Folder
 
                 //}
             }
+            Console.WriteLine("1:a sällskapet på tur: " + entrance.GroupOfGuests[0].Count);
+            Console.WriteLine("2:a sällskapet på tur: " + entrance.GroupOfGuests[1].Count);
+            Console.WriteLine("3:a sällskapet på tur: " + entrance.GroupOfGuests[2].Count);
+            Console.WriteLine("4:a sällskapet på tur: " + entrance.GroupOfGuests[3].Count);
+            Console.WriteLine("\nKassaregister: " + CashRegister);
+            Console.WriteLine("TipJar: " + TipJar);
             Console.ReadKey();
             Console.Clear();
         }
@@ -133,34 +143,43 @@ namespace TheRestaurant.Folder
         }
 
         // Check for suitable table for party of guests
-        private void MatchTableForGuests()
+        private void MatchTableForGuests(List<Table> freeTables)
         {
-            var smallTableList = Tables.Where(x => x.Small).ToList();
-            var bigTableList = Tables.Where(x => x.Small == false).ToList();
+            var smallTableList = freeTables.Where(x => x.Small).ToList();
+            var bigTableList = freeTables.Where(x => x.Small == false).ToList();
 
-            if (entrance.GroupOfGuests[0].Count <= 2)
+            for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
             {
-                if (smallTableList.Count > 0) { PlaceAtTable(smallTableList); }
-            }
-            else
-            {
-                if (bigTableList.Count > 0) { PlaceAtTable(bigTableList); }
+                if (entrance.GroupOfGuests[i].Count <= 2)
+                {
+
+                    if (smallTableList.Count > 0)
+                    {
+                        PlaceAtTable(i, smallTableList);
+                        break;
+                    }
+                }
+                else
+                {
+                    if (bigTableList.Count > 0)
+                    {
+                        PlaceAtTable(i, bigTableList);
+                        break;
+                    }
+                }
             }
         }
 
         // Place guests at available table
-        private void PlaceAtTable(List<Table> tables)
+        private void PlaceAtTable(int i, List<Table> tables)
         {
             foreach (Table table in tables)
             {
-                if (table.Occupied == false)
-                {
-                    // Skicka med en waiter från entré till bord
-                    table.Guests.AddRange(entrance.GroupOfGuests[0]);
-                    entrance.GroupOfGuests.RemoveAt(0);
-                    table.Occupied = true;
-                    break;
-                }
+                // Skicka med en waiter från entré till bord
+                table.Guests.AddRange(entrance.GroupOfGuests[i]);
+                entrance.GroupOfGuests.RemoveAt(i);
+                table.Occupied = true;
+                break;
             }
         }
 
@@ -298,14 +317,19 @@ namespace TheRestaurant.Folder
         {
             // TA BORT restaurant på något sätt
             Business.Run(table, restaurant);
-            // Pay();
             Business.Pay(table, restaurant);
 
             // Newsfeed();
             table.Guests = new();
+            table.Order = new();
+            table.Menu = new();
+            table.Actions = new();
             table.IsDirty = true;
-            table.EatingFoodCounter = 0;
             table.HasOrdered = false;
+            table.EatingFoodCounter = 0;
+            table.WaitingTimeScore = 0;
+            table.OverallScore = 0;
+
             foreach (Waiter waiter in Waiters)
             {
                 if (waiter.HasOrder is false && waiter.HasFoodToDeliver is false && waiter.CleaningTable is false)
@@ -331,6 +355,7 @@ namespace TheRestaurant.Folder
                         table.IsDirty = false;
                         waiter.Counter = 0;
                         table.Occupied = false;
+                        table.ServiceScore = 0;
                     }
                     break;
                 }

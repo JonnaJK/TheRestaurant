@@ -43,17 +43,21 @@ namespace TheRestaurant
                 {
                     var totalGuestPrice = guest.Tips + guest.MyMeal.Price;
 
+                    // If they have enough money
                     if (guest.Money >= totalGuestPrice)
                     {
-                        restaurant.CashRegister += totalGuestPrice;
+                        restaurant.CashRegister += guest.MyMeal.Price;
+                        restaurant.TipJar += guest.Tips;
                         guest.Money -= totalGuestPrice;
                     }
+                    // If they can only pay for meal, they don't tip
                     else
                     {
                         restaurant.CashRegister += guest.MyMeal.Price;
                         guest.Money -= guest.MyMeal.Price;
                     }
                 }
+                // Not enough money - Have to do dishes but loses all money they have
                 else
                 {
                     restaurant.CashRegister += guest.Money;
