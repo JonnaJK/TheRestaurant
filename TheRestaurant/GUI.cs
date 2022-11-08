@@ -12,7 +12,7 @@ namespace TheRestaurant
     {
         internal static void DrawRestaurant(Entrance entrance)
         {
-            DrawAnyList("", 0, 0, entrance.GroupOfGuests);
+            DrawAnyList("Entrance", 0, 0, entrance.GroupOfGuests);
         }
         public static void Draw(string header, int fromLeft, int fromTop, string[] graphics)
         {
@@ -53,23 +53,36 @@ namespace TheRestaurant
             Console.Write('└' + new String('─', width + 2) + '┘');
         }
 
-        public static void DrawAnyList<T>(string header, int fromLeft, int fromTop, List<T> anyList)
+        public static void DrawAnyList<T>(string header, int fromLeft, int fromTop, List<List<T>> anyList)
         {
-            string[] graphics = new string[anyList.Count];
+            string[] graphics = new string[5];
+            int i = 0;
 
-            for (int i = 0; i < anyList.Count; i++)
+            foreach (var group in anyList)
             {
-
-                graphics[i] = (anyList[i] as Guest).Name;
-                //if (anyList[i] is Guest)
-                //{
-                //    graphics[i] = (anyList[i] as Guest).Item;
-                //}
-                //if (anyList[i] is Movie)
-                //{
-                //    graphics[i] = (anyList[i] as Movie).Title + "(" + (anyList[i] as Movie).PlayingTime + " min)";
-                //}
+                foreach (var guest in group)
+                {
+                    if (guest is Guest g)
+                    {
+                        graphics[i] = g.Name + " +" + (group.Count - 1);
+                        i++;
+                        break;
+                    }
+                }
+                if (i >= 5)
+                {
+                    break;
+                }
             }
+            //for (int j = 0; j < anyList[i].Count; j++)
+            //{
+            //    if (anyList[j] is Guest)
+            //    {
+            //        graphics[i] = (anyList[j] as Guest).Name;
+
+            //    }
+
+            //}
             Draw(header, fromLeft, fromTop, graphics);
         }
     }

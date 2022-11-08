@@ -31,9 +31,11 @@ namespace TheRestaurant.Folder
         public void Run(Restaurant restaurant)
         {
             CreateRestaurant();
+            DrawRestaurant();
 
             while (true)
             {
+                GUI.DrawRestaurant(entrance);
                 foreach (Waiter waiter in Waiters)
                 {
                     var freeTables = Tables.Where(x => !x.Occupied).ToList();
@@ -80,7 +82,7 @@ namespace TheRestaurant.Folder
                 //Console.ReadKey();
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
 
-                Actionlist();
+                //Actionlist();
 
             }
         }
@@ -322,7 +324,6 @@ namespace TheRestaurant.Folder
             // Newsfeed();
             table.Guests = new();
             table.Order = new();
-            table.Menu = new();
             table.Actions = new();
             table.IsDirty = true;
             table.HasOrdered = false;
@@ -378,7 +379,7 @@ namespace TheRestaurant.Folder
             Table.Create(_random, Tables, false, 5);
         }
 
-        // GUI
+      
         public static void DrawRestaurant()
         {
             Console.SetCursorPosition(0, 0);
