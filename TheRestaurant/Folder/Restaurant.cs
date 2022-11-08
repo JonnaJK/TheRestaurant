@@ -35,7 +35,7 @@ namespace TheRestaurant.Folder
 
             while (true)
             {
-                GUI.DrawRestaurant(entrance);
+                GUI.DrawRestaurant(restaurant, entrance);
                 foreach (Waiter waiter in Waiters)
                 {
                     var freeTables = Tables.Where(x => !x.Occupied).ToList();
@@ -79,7 +79,7 @@ namespace TheRestaurant.Folder
                     ServiceTimer(table);
                     EatingTimer(table, restaurant);
                 }
-                //Console.ReadKey();
+                Console.ReadKey();
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
 
                 //Actionlist();
