@@ -31,14 +31,18 @@ namespace TheRestaurant.Folder
         public void Run(Restaurant restaurant)
         {
             CreateRestaurant();
-            DrawRestaurant();
 
             while (true)
             {
+                DrawRestaurant();
                 GUI.DrawRestaurant(restaurant, entrance);
+                Actionlist();
+
                 foreach (Waiter waiter in Waiters)
                 {
                     var freeTables = Tables.Where(x => !x.Occupied).ToList();
+                    
+                    
                     if (waiter.CleaningTable)
                     {
                         CleanTable(waiter);
@@ -82,50 +86,44 @@ namespace TheRestaurant.Folder
                 Console.ReadKey();
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
 
-                //Actionlist();
+
 
             }
         }
 
         private void Actionlist()
         {
+
+            List<string> actionlist = new();
+            var counter = 0;
             foreach (Table table in Tables)
             {
-                Console.WriteLine("Namn: " + table.Name);
-                Console.WriteLine("Order: " + String.Join(", ", table.Order));
-                Console.WriteLine("Ockupado: " + table.Occupied);
-                Console.WriteLine("Tid att äta mat: " + table.EatingFoodCounter);
-                Console.WriteLine("Bordet har beställt: " + table.HasOrdered);
-                Console.WriteLine("Smutsigt bord: " + table.IsDirty);
-                Console.WriteLine("Totalpoäng för bordet: " + table.OverallScore);
-                Console.WriteLine("WaitingTimeScore: " + table.WaitingTimeScore);
-                Console.WriteLine("Waiting for food: " + table.WaitingForFood);
-                Console.WriteLine("ServiceScore: " + table.ServiceScore);
-                Console.WriteLine("antal gäster i sällskap: " + table.Guests.Count);
-                Console.WriteLine(String.Join(", ", table.Actions));
-                Console.WriteLine("--------------------------------");
-                //foreach (Guest guest in table.Guests)
-                //{
 
-                //    Console.WriteLine();
-                //    Console.WriteLine("Namn på gäst: " + guest.Name);
-                //    Console.WriteLine("Pengar: " + guest.Money);
-                //    Console.WriteLine("Vegetarian: " + guest.IsVegetarian);
-                //    Console.WriteLine("Poäng/procent dricks: " + guest.Score);
-                //    Console.WriteLine("Måltid: " + guest.MyMeal);
-                //    Console.WriteLine("Pris på måltid: " + guest.MyMeal);
-                //    Console.WriteLine("Dricks för måltid: " + guest.Tips);
+                actionlist.Add("Namn: " + table.Name);
+                actionlist.Add("Order: " + String.Join(", ", table.Order));
+                actionlist.Add("Ockupado: " + table.Occupied);
+                actionlist.Add("Tid att äta mat: " + table.EatingFoodCounter);
+                actionlist.Add("Bordet har beställt: " + table.HasOrdered);
+                actionlist.Add("Smutsigt bord: " + table.IsDirty);
+                actionlist.Add("Totalpoäng för bordet: " + table.OverallScore);
+                actionlist.Add("WaitingTimeScore: " + table.WaitingTimeScore);
+                actionlist.Add("Waiting for food: " + table.WaitingForFood);
+                actionlist.Add("ServiceScore: " + table.ServiceScore);
+                actionlist.Add("antal gäster i sällskap: " + table.Guests.Count);
+                actionlist.Add(String.Join(", ", table.Actions));
+                actionlist.Add("--------------------------------");
+                counter++;
+                if (counter >= 2)
+                {
+                    break;
+                }
 
-                //}
             }
-            Console.WriteLine("1:a sällskapet på tur: " + entrance.GroupOfGuests[0].Count);
-            Console.WriteLine("2:a sällskapet på tur: " + entrance.GroupOfGuests[1].Count);
-            Console.WriteLine("3:a sällskapet på tur: " + entrance.GroupOfGuests[2].Count);
-            Console.WriteLine("4:a sällskapet på tur: " + entrance.GroupOfGuests[3].Count);
-            Console.WriteLine("\nKassaregister: " + CashRegister);
-            Console.WriteLine("TipJar: " + TipJar);
-            Console.ReadKey();
-            Console.Clear();
+
+            actionlist.Add("Kassaregister: " + CashRegister);
+            actionlist.Add("TipJar: " + TipJar);
+            GUI.DrawActionList("Actionlist", 105, 0, actionlist);
+
         }
 
         private void DropOfFood(Waiter waiter)
@@ -379,7 +377,7 @@ namespace TheRestaurant.Folder
             Table.Create(_random, Tables, false, 5);
         }
 
-      
+
         public static void DrawRestaurant()
         {
             Console.SetCursorPosition(0, 0);
