@@ -27,7 +27,7 @@ namespace TheRestaurant
         // The 4 systems that give us the overallscore is:
         //
         // 1. qualityScore (see CookFood in restaurant.cs)
-        // Each dish (Food.cs) has an empty property called QualityScore.
+        // Each dish (in Food.cs) has an empty property called QualityScore.
         // Each chef is given a randomized competencelevel between 1 - 5.
         // When the food order arrives to the kitchen, the assigned chef "cooks" the food and give qualityscore a value
         // based on the chefs competencelevel before sending it back to the table.
@@ -40,11 +40,11 @@ namespace TheRestaurant
         //
         // 3. serviceScore (see the method Pointsystem in business.cs for algorithm)
         // Each table has an empty property called ServiceScore.
-        // Each waiter (waiter.cs) is given a randomized number between 1 - 5, called ServiceScore.
+        // Each waiter (in waiter.cs) is given a randomized number between 1 - 5, called ServiceScore.
         // Every time the waiter do something for the table, wether is be taking the order or delivering the food. The waiter "drops" off the random number into the property ServiceScore.
         // There are a total of 3 visits to the table and they all can be done by 3 different waiters with their individual score.
         // This means that a table can have a total of 15 in servicescore, but it's highly unlikely that they will be served by the same waiter all night so a lower number is to be expected.
-        // Inside the method Pointsystem (below) we then convert the number given by the waiters into a number between 1 - 5, which then is the updated _serviceScore inside business.cs and being used in overallscore.
+        // Inside the method Pointsystem (below) we then convert the number given by the waiters into a number between 1 - 5, which then is the updated serviceScore inside business.cs and being used in overallscore.
         //
         // * If we implement a unique counter for each waiter, then we can track the workethic of that individual and divide the tip based on performance.
         // 
@@ -68,6 +68,7 @@ namespace TheRestaurant
         //
         //
         // These systems score feed into the overallscore, and then we use that to tell us how satisfied they are.
+        // Max score is 20 and 4 is the lowest.
         // 
         // Equal to or more than 16 = Very pleased
         // More than 12 but below 16 = Pleased
@@ -91,7 +92,7 @@ namespace TheRestaurant
         // The amount of tip is 10% of 300, which is 30.
         // See the method Tips in business.cs.
         //
-        // We have variable called _totalGuestPrice which is the combined amount a certain guest has to pay (price of food + tip).
+        // We have variable called totalGuestPrice which is the combined amount a certain guest has to pay (price of food + tip).
         // Each guest has a randomized number for money and if the totalguestprice exceeds their money, they have to do the dishes as punishment/payment.
         //
         //
@@ -102,17 +103,19 @@ namespace TheRestaurant
         //
         // Examples of business metrics that can be created with these variables:
         //
-        // > Daily, monthly or yearly profit for the restaurant
-        // > Daily, monthly or yearly tip for the staff
+        // > Daily profit for the restaurant
+        // > Daily tip for the staff
         // > Average value of each table
         // > Average value of each guest
-        // > Average profit margin
-        // and many more can be added by tweaking or adding some properties/variables for basiclly all classes (rent, salaries, raw materials etc.)
+        // > Average tip left by the guests
+        // > Divide tip/profit between staff and the "house"
+        //
+        // and many more can be added by tweaking or adding some properties/variables for basiclly all classes (track each day that feeds into a log, rent, salaries, raw materials etc.)
         //
         //
         // ---------------------------------------
         //
-        // This text has been updated 8/11-22.
+        // This text has been updated 9/11-22.
 
 
 
