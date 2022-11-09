@@ -9,7 +9,7 @@ namespace TheRestaurant.Persons
 {
     internal class Chef : Person
     {
-        // Ärver Name och counter från Person
+        
         public int CompetenceLevel { get; set; }
 
         public bool HasOrder { get; set; }
