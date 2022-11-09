@@ -125,7 +125,7 @@ namespace TheRestaurant
         private static int _placementScore;
         private static int _waitingTimeScore;
         private static int _serviceScore;
-        private static readonly double _totalGuestPrice; // ändrat här, osäker på om det funkar eller ej... måste denna vara readonly?
+        //private static readonly double _totalGuestPrice; // ändrat här, osäker på om det funkar eller ej... måste denna vara readonly?
         private static readonly int _maxOverallScore = 20;
        
         internal static void ShowReceipt()
@@ -151,8 +151,8 @@ namespace TheRestaurant
             {
                 if (guest.Money >= guest.MyMeal.Price)
                 {
-                    // var totalGuestPrice = guest.Tips + guest.MyMeal.Price; ------- HÄR!
-                    totalGuestPrice = guest.Tips + guest.MyMeal.Price;
+                    var totalGuestPrice = guest.Tips + guest.MyMeal.Price;
+                    //totalGuestPrice = guest.Tips + guest.MyMeal.Price;
 
                     // If they have enough money to both pay their meal and leave a tip.
                     if (guest.Money >= totalGuestPrice)
