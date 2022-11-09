@@ -36,19 +36,19 @@ namespace TheRestaurant.Folder
             {
                 DrawRestaurant();
                 GUI.DrawRestaurant(restaurant, entrance);
-                Actionlist();
                 var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
                 var occupiedWaiters = Waiters.Where(x => x.CleaningTable).ToList();
 
-                foreach (Waiter waiter in occupiedWaiters)
-                {
-                    var dirtyTables = Tables.Where(x => x.IsDirty).ToList();
+                //foreach (Waiter waiter in occupiedWaiters)
+                //{
+                var dirtyTables = Tables.Where(x => x.IsDirty).ToList();
+                Actionlist(dirtyTables);
 
-                    if (dirtyTables.Count > 0)
-                    {
-                        CleanTable(waiter, dirtyTables, availableWaiters);
-                    }
+                if (dirtyTables.Count > 0)
+                {
+                    CleanTable(dirtyTables, occupiedWaiters);
                 }
+                //}
 
                 foreach (Waiter waiter in availableWaiters)
                 {
@@ -96,40 +96,6 @@ namespace TheRestaurant.Folder
             }
         }
 
-        private void Actionlist()
-        {
-
-            List<string> actionlist = new();
-            var counter = 0;
-            foreach (Table table in Tables)
-            {
-
-                actionlist.Add("Namn: " + table.Name);
-                actionlist.Add("Order: " + String.Join(", ", table.Order));
-                actionlist.Add("Ockupado: " + table.Occupied);
-                actionlist.Add("Tid att äta mat: " + table.EatingFoodCounter);
-                actionlist.Add("Bordet har beställt: " + table.HasOrdered);
-                actionlist.Add("Smutsigt bord: " + table.IsDirty);
-                actionlist.Add("Totalpoäng för bordet: " + table.OverallScore);
-                actionlist.Add("WaitingTimeScore: " + table.WaitingTimeScore);
-                actionlist.Add("Waiting for food: " + table.WaitingForFood);
-                actionlist.Add("ServiceScore: " + table.ServiceScore);
-                actionlist.Add("antal gäster i sällskap: " + table.Guests.Count);
-                actionlist.Add(String.Join(", ", table.Actions));
-                actionlist.Add("--------------------------------");
-                counter++;
-                if (counter >= 2)
-                {
-                    break;
-                }
-
-            }
-
-            actionlist.Add("Kassaregister: " + CashRegister);
-            actionlist.Add("TipJar: " + TipJar);
-            GUI.DrawActionList("Actionlist", 105, 0, actionlist);
-
-        }
 
         private void DropOfFood(Waiter waiter)
         {
@@ -312,9 +278,31 @@ namespace TheRestaurant.Folder
                 table.EatingFoodCounter++;
             }
             // TimeToEatFood = 20
-            if (table.EatingFoodCounter == _timeToEatFood)
+            if (table.EatingFoodCounter >= _timeToEatFood)
             {
                 Checkout(table, restaurant);
+
+                // Newsfeed();
+                table.IsDirty = true;
+                table.Guests = new();
+                table.HasOrdered = false;
+
+                foreach (Waiter waiter in Waiters)
+                {
+                    if (waiter.HasOrder is false && waiter.HasFoodToDeliver is false && waiter.CleaningTable is false)
+                    {
+                        table.Order = new();
+                        table.Actions = new();
+                        table.WaitingTimeScore = 0;
+                        table.OverallScore = 0;
+
+                        table.EatingFoodCounter = 0;
+                        table.ServiceScore += waiter.ServiceScore;
+                        waiter.CleaningTable = true;
+                        table.Waiter = waiter;
+                        break;
+                    }
+                }
             }
         }
 
@@ -323,56 +311,42 @@ namespace TheRestaurant.Folder
             // TA BORT restaurant på något sätt
             Business.Run(table, restaurant);
             Business.Pay(table, restaurant);
-
-            // Newsfeed();
-            table.Guests = new();
-            table.Order = new();
-            table.Actions = new();
-            table.IsDirty = true;
-            table.HasOrdered = false;
-            table.EatingFoodCounter = 0;
-            table.WaitingTimeScore = 0;
-            table.OverallScore = 0;
-
-            foreach (Waiter waiter in Waiters)
-            {
-                if (waiter.HasOrder is false && waiter.HasFoodToDeliver is false && waiter.CleaningTable is false)
-                {
-                    table.ServiceScore += waiter.ServiceScore;
-                    waiter.CleaningTable = true;
-                    table.Waiter = waiter;
-                    break;
-                }
-            }
         }
 
-        private void CleanTable(Waiter waiter, List<Table> dirtyTables, List<Waiter> availableWaiters)
+        private void CleanTable(List<Table> dirtyTables, List<Waiter> occupiedWaiters)
         {
-            foreach (Table table in dirtyTables)
+            foreach (var waiter in occupiedWaiters)
             {
-                if (table.Waiter.Name != "")
+                foreach (Table table in dirtyTables)
                 {
-                    if (table.Waiter.Name == waiter.Name)
+                    //var result = dirtyTables.Where(x => x.Waiter == waiter).FirstOrDefault();
+                    if (table.Waiter.Name != "")
                     {
-                        waiter.Counter++;
-
-                        if (waiter.Counter >= _timeToCleanTable) // _timeToCleanTable = 3
+                        if (table.Waiter.Name == waiter.Name)
                         {
-                            table.IsDirty = false;
-                            table.Occupied = false;
-                            waiter.CleaningTable = false;
-                            waiter.Counter = 0;
-                            table.ServiceScore = 0;
-                            table.Waiter = new(_random, "");
+                            waiter.Counter++;
+
+                            if (waiter.Counter >= _timeToCleanTable) // _timeToCleanTable = 3
+                            {
+                                table.IsDirty = false;
+                                table.Occupied = false;
+                                waiter.CleaningTable = false;
+                                waiter.Counter = 0;
+                                table.ServiceScore = 0;
+                                table.Waiter = new(_random, "");
+                            }
+                            break;
                         }
-                        break;
                     }
-                }
-                else
-                {
-                    if (availableWaiters.Count > 0)
+                    else
                     {
-                        table.Waiter = availableWaiters[0];
+                        var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
+
+                        if (availableWaiters.Count > 0)
+                        {
+                            table.Waiter = availableWaiters[0];
+                            availableWaiters[0].CleaningTable = true;
+                        }
                     }
                 }
             }
@@ -411,6 +385,61 @@ namespace TheRestaurant.Folder
                 Console.WriteLine();
             }
             Console.WriteLine("└" + "".PadRight(100, '─') + "┘");
+        }
+
+        private void Actionlist(List<Table> dirtyTables)
+        {
+
+            List<string> actionlist = new();
+            var counter = 0;
+            foreach (var waiter in Waiters)
+            {
+                actionlist.Add("Namn: " + waiter.Name);
+                actionlist.Add("HasOrder: " + waiter.HasOrder);
+                actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
+                actionlist.Add("Cleaning table: " + waiter.CleaningTable);
+                actionlist.Add("Tid att städa: " + waiter.Counter);
+                actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver);
+                actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
+                actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
+                actionlist.Add("ServiceScore: " + waiter.ServiceScore);
+                actionlist.Add("--------------------------------");
+                counter++;
+                //if (counter >= 2)
+                //{
+                //    break;
+                //}
+
+            }
+
+            //foreach (Table waiter in Tables)
+            //{
+
+            //    actionlist.Add("Namn: " + waiter.Name);
+            //    actionlist.Add("Order: " + String.Join(", ", waiter.Order));
+            //    actionlist.Add("Ockupado: " + waiter.Occupied);
+            //    actionlist.Add("Tid att äta mat: " + waiter.EatingFoodCounter);
+            //    actionlist.Add("Bordet har beställt: " + waiter.HasOrdered);
+            //    actionlist.Add("Smutsigt bord: " + waiter.IsDirty);
+            //    actionlist.Add("Totalpoäng för bordet: " + waiter.OverallScore);
+            //    actionlist.Add("WaitingTimeScore: " + waiter.WaitingTimeScore);
+            //    actionlist.Add("Waiting for food: " + waiter.WaitingForFood);
+            //    actionlist.Add("ServiceScore: " + waiter.ServiceScore);
+            //    actionlist.Add("antal gäster i sällskap: " + waiter.Guests.Count);
+            //    actionlist.Add(String.Join(", ", waiter.Actions));
+            //    actionlist.Add("--------------------------------");
+            //    counter++;
+            //    if (counter >= 2)
+            //    {
+            //        break;
+            //    }
+
+            //}
+
+            actionlist.Add("Kassaregister: " + CashRegister);
+            actionlist.Add("TipJar: " + TipJar);
+            GUI.DrawActionList("Actionlist", 105, 0, actionlist);
+
         }
     }
 }
