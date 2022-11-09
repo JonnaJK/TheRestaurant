@@ -14,6 +14,7 @@ namespace TheRestaurant.Folder
         public List<Food> Order { get; set; } = new List<Food> { };
         public List<Food> Menu { get; set; } = new();
         public List<string> Actions { get; set; } = new();
+        public Waiter Waiter { get; set; }
         public string Name { get; set; }
         public bool Small { get; set; }
         public bool IsDirty { get; set; }
@@ -24,6 +25,7 @@ namespace TheRestaurant.Folder
         public int WaitingTimeScore { get; set; }
         public int EatingFoodCounter { get; set; }
         public int ServiceScore { get; set; }
+        public int CleaningCounter { get; set; }
         public double OverallScore { get; set; }
 
         public Table(Random random, string name, bool small)
@@ -31,6 +33,8 @@ namespace TheRestaurant.Folder
             Name = name;
             PlacementScore = random.Next(1, 6);
             Small = small;
+
+            Waiter = new(random, "");
 
             Food.CreateMenu(Menu);
         }

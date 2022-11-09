@@ -37,39 +37,44 @@ namespace TheRestaurant.Folder
                 DrawRestaurant();
                 GUI.DrawRestaurant(restaurant, entrance);
                 Actionlist();
+                var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
+                var occupiedWaiters = Waiters.Where(x => x.CleaningTable).ToList();
 
-                foreach (Waiter waiter in Waiters)
+                foreach (Waiter waiter in occupiedWaiters)
+                {
+                    var dirtyTables = Tables.Where(x => x.IsDirty).ToList();
+
+                    if (dirtyTables.Count > 0)
+                    {
+                        CleanTable(waiter, dirtyTables, availableWaiters);
+                    }
+                }
+
+                foreach (Waiter waiter in availableWaiters)
                 {
                     var freeTables = Tables.Where(x => !x.Occupied).ToList();
-                    
-                    
-                    if (waiter.CleaningTable)
+
+                    if (waiter.OutOrder.Count > 0)
                     {
-                        CleanTable(waiter);
+                        DropOfFood(waiter);
+                    }
+                    else if (entrance.GroupOfGuests.Count is not 0 && freeTables.Count > 0)
+                    {
+                        MatchTableForGuests(freeTables);
+                    }
+                    else if (waiter.HasOrder)
+                    {
+                        DropOffOrder(waiter);
+                    }
+                    else if (Kitchen.OutOrders.Count > 0 && waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
+                    {
+                        PickUpFoodFromKitchen(waiter);
                     }
                     else
                     {
-                        if (waiter.OutOrder.Count > 0)
-                        {
-                            DropOfFood(waiter);
-                        }
-                        else if (entrance.GroupOfGuests.Count is not 0 && freeTables.Count > 0)
-                        {
-                            MatchTableForGuests(freeTables);
-                        }
-                        else if (waiter.HasOrder)
-                        {
-                            DropOffOrder(waiter);
-                        }
-                        else if (Kitchen.OutOrders.Count > 0 && waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
-                        {
-                            PickUpFoodFromKitchen(waiter);
-                        }
-                        else
-                        {
-                            CheckIfHasOrdered(waiter);
-                        }
+                        CheckIfHasOrdered(waiter);
                     }
+
                 }
 
                 foreach (Chef chef in Kitchen.Chefs)
@@ -335,28 +340,40 @@ namespace TheRestaurant.Folder
                 {
                     table.ServiceScore += waiter.ServiceScore;
                     waiter.CleaningTable = true;
+                    table.Waiter = waiter;
                     break;
                 }
             }
         }
 
-        private void CleanTable(Waiter waiter)
+        private void CleanTable(Waiter waiter, List<Table> dirtyTables, List<Waiter> availableWaiters)
         {
-            foreach (Table table in Tables)
+            foreach (Table table in dirtyTables)
             {
-                if (table.IsDirty == true && waiter.CleaningTable == true)
+                if (table.Waiter.Name != "")
                 {
-                    waiter.Counter++;
-                    // TimeToCleanTable = 3
-                    if (waiter.Counter >= _timeToCleanTable)
+                    if (table.Waiter.Name == waiter.Name)
                     {
-                        waiter.CleaningTable = false;
-                        table.IsDirty = false;
-                        waiter.Counter = 0;
-                        table.Occupied = false;
-                        table.ServiceScore = 0;
+                        waiter.Counter++;
+
+                        if (waiter.Counter >= _timeToCleanTable) // _timeToCleanTable = 3
+                        {
+                            table.IsDirty = false;
+                            table.Occupied = false;
+                            waiter.CleaningTable = false;
+                            waiter.Counter = 0;
+                            table.ServiceScore = 0;
+                            table.Waiter = new(_random, "");
+                        }
+                        break;
                     }
-                    break;
+                }
+                else
+                {
+                    if (availableWaiters.Count > 0)
+                    {
+                        table.Waiter = availableWaiters[0];
+                    }
                 }
             }
         }

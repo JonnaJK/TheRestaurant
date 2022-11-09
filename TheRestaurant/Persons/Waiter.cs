@@ -22,8 +22,9 @@ namespace TheRestaurant.Persons
         public int ServiceScore { get; set; }
 
 
-        public Waiter(Random _random)
+        public Waiter(Random _random, string name)
         {
+            Name = name;
             ServiceScore = _random.Next(1, 6);
         }
     }
