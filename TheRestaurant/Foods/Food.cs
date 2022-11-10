@@ -23,16 +23,15 @@ namespace TheRestaurant.Foods
 
         public static void CreateMenu(List<Food> menu)
         {
-            menu.Add(new Food("Vegetarian 1", 123, true));
-            menu.Add(new Food("Vegetarian 2", 123, true));
-            menu.Add(new Food("Vegetarian 3", 123, true));
-            menu.Add(new Food("Meat 1", 123, false));
-            menu.Add(new Food("Meat 2", 123, false));
-            menu.Add(new Food("Meat 3", 123, false));
-            menu.Add(new Food("Fish 1", 123, false));
-            menu.Add(new Food("Fish 2", 123, false));
-            menu.Add(new Food("Fish 3", 123, false));       
-            menu.Add(new Food("Vegetarian 4", 123, true));
+            menu.Add(new Food("Vegetarian mushroom troganoff with pumpkin", 229, true));
+            menu.Add(new Food("Vegetarian curries", 189, true));
+            menu.Add(new Food("Vegetarian beetroot pie", 219, true));
+            menu.Add(new Food("Whole roast beef tenderloin", 279, false));
+            menu.Add(new Food("Pork filet stew", 249, false));
+            menu.Add(new Food("Fried sirloin steak", 199, false));
+            menu.Add(new Food("Salmon fillet in the oven with lemon", 239, false));
+            menu.Add(new Food("Breaded cod", 123, false));
+            menu.Add(new Food("Pestobaked saithe with carrot salad", 179, false));
         }
     }
 }
