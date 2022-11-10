@@ -15,9 +15,14 @@ namespace TheRestaurant.Persons
         public bool HasOrder { get; set; }
         public Dictionary<string, List<Food>> Order { get; set; } = new();
 
-        public Chef(Random random)
+        public Chef(Random random, string name)
         {
             CompetenceLevel = random.Next(1, 6);
+
+            name += Name;
+            Name = name;
+
+           
         }
     }
 }

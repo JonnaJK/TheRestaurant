@@ -20,6 +20,7 @@ namespace TheRestaurant.Folder
         public List<Waiter> Waiters { get; set; } = new List<Waiter>();
         public double CashRegister { get; set; }
         public double TipJar { get; set; }
+        public int Time { get; set; }
         private readonly Random _random = new Random();
         private Entrance entrance = new();
         internal readonly int _timeToCookFood = 10;
@@ -50,7 +51,7 @@ namespace TheRestaurant.Folder
                 }
                 //}
 
-                // Hämta nästa grupp (om finns) och hämta första lediga borted till sällskapet
+                // Fetch next group (if there is one) and get an available table to the company
                 List<Guest>? nextMatchedGroup = new();
                 List<Table> availableTables = new();
                 bool canMatchTableToGuest = false;
@@ -113,7 +114,7 @@ namespace TheRestaurant.Folder
                 Console.ReadKey();
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
 
-
+                Time++;
 
             }
         }

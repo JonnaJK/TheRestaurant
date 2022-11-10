@@ -12,10 +12,15 @@ namespace TheRestaurant
     internal class GUI
     {
         private static int _width = 0;
+
+        // Build Entrance and calls the method for drawing tables
         internal static void DrawRestaurant(Restaurant restaurant, Entrance entrance)
         {
+
+
             DrawAnyList("Entrance", 0, 0, entrance.GroupOfGuests);
-            int fromLeft = 25;
+            DrawAnyList("Kitchen", 0, 20, restaurant.Kitchen.Chefs);
+            int fromLeft = 26;
             int fromTop = 3;
             int counter = 0;
             int brakeRow = 3;
@@ -23,7 +28,7 @@ namespace TheRestaurant
             {
                 for (int j = 0; j < brakeRow; j++)
                 {
-                    Draw(restaurant.Tables[counter].Name, fromLeft, fromTop, restaurant.Tables[counter].Guests, restaurant.Tables[counter].Small);
+                    Draw(restaurant.Tables[counter].Name, restaurant.Tables[counter].Waiter.Name, fromLeft, fromTop, restaurant.Tables[counter].Guests, restaurant.Tables[counter].Small);
                     fromLeft += 25;
                     counter++;
                 }
@@ -36,12 +41,46 @@ namespace TheRestaurant
                 else if (brakeRow == 4)
                 {
                     brakeRow = 3;
-                    fromLeft = 25;
+                    fromLeft = 26;
                 }
             }
+            for (int i = 0; i <  ;i++)
+            {
+                if (graphics[i].Length > width)
+                {
+                    width = graphics[i].Length;
+                }
+            }
+            for (int i = 0; i < .Length; i++)
+            {
+                if (graphics[i].Length > width)
+                {
+                    width = graphics[i].Length;
+                }
+            }
+            var availableWaiters = restaurant.Waiters.Where(x => !x.CleaningTable).ToList();
 
+            for (int i = 0; i < availableWaiters.Count; i++)
+            {
+                Waiter waiter = availableWaiters[i];
+                if (waiter.HasOrder == false && waiter.HasFoodToDeliver == false)
+                {
+                    Console.SetCursorPosition(17, 3+i);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(waiter.Name);          
+                }
+                else if (waiter.HasOrder == true || waiter.HasFoodToDeliver == true)
+                {
+                    Console.SetCursorPosition(17, 22+i);
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(waiter.Name);
+                }
+            }
+            Console.ResetColor();
         }
-        public static void Draw(string header, int fromLeft, int fromTop, List<Guest> guests, bool isSmall)
+
+        // Build tables, used in DrawRestaurant
+        public static void Draw(string header, string footer, int fromLeft, int fromTop, List<Guest> guests, bool isSmall)
         {
             int tableSize = 0;
             if (isSmall)
@@ -53,10 +92,7 @@ namespace TheRestaurant
                 tableSize = 4;
             }
             string[] graphics = new string[tableSize];
-            //for (int i = 0; i < guests.Count; i++)
-            //{
-            //    graphics[i] = guests[i].Name;
-            //}
+
             for (int i = 0; i < tableSize; i++)
             {
                 if (guests.Count > 0)
@@ -127,8 +163,21 @@ namespace TheRestaurant
                 maxRows = j;
             }
             Console.SetCursorPosition(fromLeft, fromTop + maxRows + 2);
-            Console.Write('└' + new String('─', width + 2) + '┘');
+            if (footer != "")
+            {
+                Console.Write('└' + " ");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(footer);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.Write(" " + new String('─', width - footer.Length) + '┘');
+            }
+            else
+            {
+                Console.Write('└' + new String('─', width + 2) + '┘');
+            }
         }
+
+        // Build the actual entrance, used in DrawAnylist
         public static void Draw(string header, int fromLeft, int fromTop, string[] graphics)
         {
             int width = 0;
@@ -175,6 +224,7 @@ namespace TheRestaurant
             Console.Write('└' + new String('─', width + 2) + '┘');
         }
 
+        // Make building ENTRANCE possible by converting list in list to array, used in DrawRestaurant
         public static void DrawAnyList<T>(string header, int fromLeft, int fromTop, List<List<T>> anyList)
         {
             string[] graphics = new string[5];
@@ -196,18 +246,27 @@ namespace TheRestaurant
                     break;
                 }
             }
-            //for (int j = 0; j < anyList[i].Count; j++)
-            //{
-            //    if (anyList[j] is Guest)
-            //    {
-            //        graphics[i] = (anyList[j] as Guest).Name;
-
-            //    }
-
-            //}
             Draw(header, fromLeft, fromTop, graphics);
         }
 
+        // Make building KITCHEN possible by converting list to array, used in Drawrestaurant
+        public static void DrawAnyList<T>(string header, int fromLeft, int fromTop, List<T> anyList)
+        {
+            string[] graphics = new string[anyList.Count];
+            int i = 0;
+
+            foreach (var chef in anyList)
+            {
+                if (chef is Chef c)
+                {
+                    graphics[i] = c.Name;
+                    i++;
+                }
+            }
+            Draw(header, fromLeft, fromTop, graphics);
+        }
+
+        // Build the actionList
         public static void DrawActionList(string header, int fromLeft, int fromTop, List<string> actionlist)
         {
             string[] graphics = actionlist.ToArray();

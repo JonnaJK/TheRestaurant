@@ -47,7 +47,7 @@ namespace TheRestaurant.Persons
         {
             for (int i = 0; i < numberOfChefs; i++)
             {
-                chefs.Add(new Chef(random));
+                chefs.Add(new Chef(random, "Chef "));
             }
         }
 
