@@ -13,7 +13,8 @@ namespace TheRestaurant.Folder
         public List<Guest> Guests { get; set; } = new List<Guest> { };
         public List<Food> Order { get; set; } = new List<Food> { };
         public List<Food> Menu { get; set; } = new();
-        public List<string> Actions { get; set; } = new();
+        public List<string> Receipt { get; set; } = new();
+        public string Actions { get; set; }
         public Waiter Waiter { get; set; }
         public string Name { get; set; }
         public bool Small { get; set; }

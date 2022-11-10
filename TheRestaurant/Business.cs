@@ -174,14 +174,16 @@ namespace TheRestaurant
                     {
                         restaurant.CashRegister += guest.MyMeal.Price;
                         guest.Money -= guest.MyMeal.Price;
+                        guest.Tips = 0;
                     }
                 }
                 // They dont have enough money to pay for their meal, nor leaving a tip.
                 else
                 {
                     restaurant.CashRegister += guest.Money;
+                    guest.Receipt = guest.Money;
                     guest.Money -= guest.Money;
-                    table.Actions.Add($"{guest.Name} will have to wash the dishes because she/he is broke and cannot pay. ");
+                    guest.Tips = -1;
                 }
             }
         }
@@ -191,23 +193,23 @@ namespace TheRestaurant
         {
             if (table.OverallScore > _maxOverallScore * 0.8)
             {
-                table.Actions.Add("The guests are very happy with their overall experience. ");
+                table.Actions = "The guests are very happy with their overall experience.";
             }
             else if (table.OverallScore > _maxOverallScore * 0.6)
             {
-                table.Actions.Add("The guests are content with their overall experience. ");
+                table.Actions = "The guests are content with their overall experience.";
             }
             else if (table.OverallScore > _maxOverallScore * 0.4)
             {
-                table.Actions.Add("The guests are neutral with their overall experience. ");
+                table.Actions = "The guests are neutral with their overall experience.";
             }
             else if (table.OverallScore > _maxOverallScore * 0.2)
             {
-                table.Actions.Add("The guests are dissatisfied with their overall experience. ");
+                table.Actions = "The guests are dissatisfied with their overall experience.";
             }
             else
             {
-                table.Actions.Add("The guests are extremely unhappy with their overall experience. ");
+                table.Actions = "The guests are extremely unhappy with their overall experience.";
             }
         }
 

@@ -10,10 +10,11 @@ namespace TheRestaurant.Persons
 {
     internal class Guest : Person
     {
+        public Food MyMeal { get; set; }
         public double Money { get; set; }
+        public double Receipt { get; set; }
         public int Satisfied { get; set; }
         public bool IsVegetarian { get; set; }
-        public Food MyMeal { get; set; }
         public double Tips { get; set; }
         public double Score { get; set; }
 

@@ -307,8 +307,9 @@ namespace TheRestaurant.Folder
                 Checkout(table, restaurant);
 
                 // Newsfeed();
-                table.IsDirty = true;
                 table.Guests = new();
+                table.Receipt = new();
+                table.IsDirty = true;
                 table.HasOrdered = false;
 
                 foreach (Waiter waiter in Waiters)
@@ -316,7 +317,7 @@ namespace TheRestaurant.Folder
                     if (waiter.HasOrder is false && waiter.HasFoodToDeliver is false && waiter.CleaningTable is false)
                     {
                         table.Order = new();
-                        table.Actions = new();
+                        table.Actions = "";
                         table.WaitingTimeScore = 0;
                         table.OverallScore = 0;
 
@@ -410,6 +411,25 @@ namespace TheRestaurant.Folder
             }
             Console.WriteLine("└" + "".PadRight(100, '─') + "┘");
         }
+        internal void Receipt(Table table)
+        {
+
+            table.Receipt.Add("Group: " + table.Guests[0].Name + " +" + (table.Guests.Count - 1));
+            foreach (Guest guest in table.Guests)
+            {
+                if (guest.Tips != -1)
+                {
+                    table.Receipt.Add($"{guest.MyMeal.Name}, {guest.MyMeal.Price} SEK and tipped {Math.Round(guest.Tips, 2)} SEK");
+                }
+                else
+                {
+                    table.Receipt.Add($"{guest.MyMeal.Name}, {guest.MyMeal.Price} SEK but could only pay {Math.Round(guest.Receipt, 2)} SEK,");
+                    table.Receipt.Add($"so they also had to wash the dishes");
+                }
+            }
+            table.Receipt.Add(table.Actions);
+            GUI.DrawActionList("Receipt", 0, 28, table.Receipt);
+        }
 
         private void Actionlist(List<Table> dirtyTables)
         {
@@ -460,8 +480,8 @@ namespace TheRestaurant.Folder
 
             //}
 
-            actionlist.Add("Kassaregister: " + CashRegister);
-            actionlist.Add("TipJar: " + TipJar);
+            actionlist.Add("Kassaregister: " + Math.Round(CashRegister, 2));
+            actionlist.Add("TipJar: " + Math.Round(TipJar, 2));
             GUI.DrawActionList("Actionlist", 105, 0, actionlist);
 
         }

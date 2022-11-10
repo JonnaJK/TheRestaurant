@@ -16,8 +16,6 @@ namespace TheRestaurant
         // Build Entrance and calls the method for drawing tables
         internal static void DrawRestaurant(Restaurant restaurant, Entrance entrance)
         {
-
-
             DrawAnyList("Entrance", 0, 0, entrance.GroupOfGuests);
             DrawAnyList("Kitchen", 0, 20, restaurant.Kitchen.Chefs);
             int fromLeft = 26;
@@ -44,18 +42,23 @@ namespace TheRestaurant
                     fromLeft = 26;
                 }
             }
-            for (int i = 0; i <  ;i++)
+            int width1 = 0;
+            int width2 = 0;
+            for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
             {
-                if (graphics[i].Length > width)
+                for (int j = 0; j < entrance.GroupOfGuests[i].Count; j++)
                 {
-                    width = graphics[i].Length;
+                    if (entrance.GroupOfGuests[i][j].Name.Length > width1)
+                    {
+                        width1 = entrance.GroupOfGuests[i][j].Name.Length;
+                    }
                 }
             }
-            for (int i = 0; i < .Length; i++)
+            for (int i = 0; i < restaurant.Kitchen.Chefs.Count; i++)
             {
-                if (graphics[i].Length > width)
+                if (restaurant.Kitchen.Chefs[i].Name.Length > width2)
                 {
-                    width = graphics[i].Length;
+                    width2 = restaurant.Kitchen.Chefs[i].Name.Length;
                 }
             }
             var availableWaiters = restaurant.Waiters.Where(x => !x.CleaningTable).ToList();
@@ -65,18 +68,26 @@ namespace TheRestaurant
                 Waiter waiter = availableWaiters[i];
                 if (waiter.HasOrder == false && waiter.HasFoodToDeliver == false)
                 {
-                    Console.SetCursorPosition(17, 3+i);
+                    Console.SetCursorPosition(width1 + 8, 3 + i);
                     Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine(waiter.Name);          
+                    Console.WriteLine(waiter.Name);
                 }
                 else if (waiter.HasOrder == true || waiter.HasFoodToDeliver == true)
                 {
-                    Console.SetCursorPosition(17, 22+i);
+                    Console.SetCursorPosition(width2 + 5, 22 + i);
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.WriteLine(waiter.Name);
                 }
             }
             Console.ResetColor();
+
+            foreach (Table table in restaurant.Tables)
+            {
+                if(table.Receipt.Count > 0)
+                {
+                    DrawActionList("Receipt", 0, 28, table.Receipt);
+                }
+            }
         }
 
         // Build tables, used in DrawRestaurant
