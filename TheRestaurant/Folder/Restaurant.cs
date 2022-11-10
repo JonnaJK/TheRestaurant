@@ -50,6 +50,28 @@ namespace TheRestaurant.Folder
                 }
                 //}
 
+                // Hämta nästa grupp (om finns) och hämta första lediga borted till sällskapet
+                List<Guest>? nextMatchedGroup = new();
+                List<Table> availableTables = new();
+                bool canMatchTableToGuest = false;
+                if (entrance.GroupOfGuests.Count > 0)
+                {
+                    nextMatchedGroup = entrance.GroupOfGuests.FirstOrDefault();
+                    var availableSmallTables = Tables.Where(x => !x.Occupied && x.Small).ToList();
+                    var availableBigTables = Tables.Where(x => !x.Occupied && !x.Small).ToList();
+
+                    if (nextMatchedGroup?.Count > 2 && availableBigTables.Count > 0)
+                    {
+                        canMatchTableToGuest = true;
+                        availableTables = availableBigTables;
+                    }
+                    else if (nextMatchedGroup?.Count < 3 && availableSmallTables.Count > 0)
+                    {
+                        canMatchTableToGuest = true;
+                        availableTables = availableSmallTables;
+                    }
+                }
+
                 foreach (Waiter waiter in availableWaiters)
                 {
                     var freeTables = Tables.Where(x => !x.Occupied).ToList();
@@ -58,9 +80,9 @@ namespace TheRestaurant.Folder
                     {
                         DropOfFood(waiter);
                     }
-                    else if (entrance.GroupOfGuests.Count is not 0 && freeTables.Count > 0)
+                    else if (canMatchTableToGuest == true)
                     {
-                        MatchTableForGuests(freeTables);
+                        MatchTableForGuests(availableTables, nextMatchedGroup);
                     }
                     else if (waiter.HasOrder)
                     {
@@ -114,31 +136,32 @@ namespace TheRestaurant.Folder
         }
 
         // Check for suitable table for party of guests
-        private void MatchTableForGuests(List<Table> freeTables)
+        private void MatchTableForGuests(List<Table> availableTables, List<Guest> groupOfGuests)
         {
-            var smallTableList = freeTables.Where(x => x.Small).ToList();
-            var bigTableList = freeTables.Where(x => x.Small == false).ToList();
+            availableTables[0].Guests.AddRange(groupOfGuests);
+            entrance.GroupOfGuests.Remove(groupOfGuests);
+            availableTables[0].Occupied = true;
 
-            for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
-            {
-                if (entrance.GroupOfGuests[i].Count <= 2)
-                {
+            //for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
+            //{
+            //    if (entrance.GroupOfGuests[i].Count <= 2)
+            //    {
 
-                    if (smallTableList.Count > 0)
-                    {
-                        PlaceAtTable(i, smallTableList);
-                        break;
-                    }
-                }
-                else
-                {
-                    if (bigTableList.Count > 0)
-                    {
-                        PlaceAtTable(i, bigTableList);
-                        break;
-                    }
-                }
-            }
+            //        if (availableTables.Count > 0)
+            //        {
+            //            PlaceAtTable(i, availableTables);
+            //            break;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        if (availableTables.Count > 0)
+            //        {
+            //            PlaceAtTable(i, availableTables);
+            //            break;
+            //        }
+            //    }
+            //}
         }
 
         // Place guests at available table
@@ -399,7 +422,7 @@ namespace TheRestaurant.Folder
                 actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
                 actionlist.Add("Cleaning table: " + waiter.CleaningTable);
                 actionlist.Add("Tid att städa: " + waiter.Counter);
-                actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver);
+                actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver); // visar fel
                 actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
                 actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
                 actionlist.Add("ServiceScore: " + waiter.ServiceScore);
