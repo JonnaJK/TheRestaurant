@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Persons;
+﻿using TheRestaurant.Persons;
 
 namespace TheRestaurant.Folder
 {
@@ -15,6 +10,5 @@ namespace TheRestaurant.Folder
         {
             GroupOfGuests = new List<List<Guest>>();
         }
-
     }
 }

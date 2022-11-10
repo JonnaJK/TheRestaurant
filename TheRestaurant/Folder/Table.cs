@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Foods;
+﻿using TheRestaurant.Foods;
 using TheRestaurant.Persons;
 
 namespace TheRestaurant.Folder
@@ -34,7 +29,6 @@ namespace TheRestaurant.Folder
             Name = name;
             PlacementScore = random.Next(1, 6);
             Small = small;
-
             Waiter = new(random, "");
 
             Food.CreateMenu(Menu);
@@ -50,7 +44,5 @@ namespace TheRestaurant.Folder
                 tables.Add(new Table(random, name, small));
             }
         }
-
-
     }
 }

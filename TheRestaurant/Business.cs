@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Folder;
+﻿using TheRestaurant.Folder;
 using TheRestaurant.Foods;
-using TheRestaurant.Interface;
 using TheRestaurant.Persons;
 
 namespace TheRestaurant
@@ -127,8 +121,6 @@ namespace TheRestaurant
          This text has been updated 9 / 11 - 22.
     */
 
-
-
     internal static class Business
     {
         private static int _qualityScore;
@@ -137,10 +129,6 @@ namespace TheRestaurant
         private static int _serviceScore;
         private static readonly int _maxOverallScore = 20;
 
-        internal static void ShowReceipt()
-        {
-
-        }
         internal static void SetPoints(Table table, Restaurant restaurant)
         {
             Pointsystem(table, restaurant);

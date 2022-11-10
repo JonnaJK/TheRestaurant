@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using TheRestaurant.Interface;
+﻿using TheRestaurant.Interface;
 
 namespace TheRestaurant.Persons
 {
@@ -18,7 +12,6 @@ namespace TheRestaurant.Persons
         public Person()
         {
             Name = Helpers.GetName();
-
         }
 
         // Generic method - not complete. Using Create(Overload) now, but wants to use Generic method

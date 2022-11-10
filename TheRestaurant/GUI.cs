@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Folder;
+﻿using TheRestaurant.Folder;
 using TheRestaurant.Persons;
 
 namespace TheRestaurant
@@ -16,8 +10,10 @@ namespace TheRestaurant
         // Build Entrance and calls the method for drawing tables
         internal static void DrawRestaurant(Restaurant restaurant, Entrance entrance)
         {
+            DrawRestaurantBorders();
             DrawAnyList("Entrance", 0, 0, entrance.GroupOfGuests);
             DrawAnyList("Kitchen", 0, 20, restaurant.Kitchen.Chefs);
+
             int fromLeft = 26;
             int fromTop = 3;
             int counter = 0;
@@ -88,6 +84,28 @@ namespace TheRestaurant
                     DrawActionList("Receipt", 0, 28, table.Receipt);
                 }
             }
+
+            Console.SetCursorPosition(102, 0);
+            Console.WriteLine("Ticks: " + restaurant.Time);
+        }
+
+        // Draws the border of the restaurant.
+        public static void DrawRestaurantBorders()
+        {
+            Console.SetCursorPosition(0, 0);
+            Console.WriteLine("┌" + "".PadRight(100, '─') + "┐");
+
+            for (int rows = 0; rows < 25; rows++)
+            {
+                Console.Write("│");
+                for (int cols = 0; cols < 100; cols++)
+                {
+                    Console.Write(" ");
+                }
+                Console.Write("│");
+                Console.WriteLine();
+            }
+            Console.WriteLine("└" + "".PadRight(100, '─') + "┘");
         }
 
         // Build tables, used in DrawRestaurant

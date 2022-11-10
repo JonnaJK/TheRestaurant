@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Foods;
+﻿using TheRestaurant.Foods;
 
 namespace TheRestaurant.Persons
 {
@@ -27,11 +21,9 @@ namespace TheRestaurant.Persons
             {
                 IsVegetarian = true;
             }
-
         }
 
-
-        internal static void ChooseGuests(int amountOfGuests, Random random, List<List<Guest>> groups)
+        internal static void CreateGuests(int amountOfGuests, Random random, List<List<Guest>> groups)
         {
             while (amountOfGuests > 0)
             {

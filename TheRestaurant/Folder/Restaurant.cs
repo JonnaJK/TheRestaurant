@@ -1,33 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Interface;
-using TheRestaurant.Persons;
-using TheRestaurant.Foods;
-using System.Diagnostics.Metrics;
-using System.ComponentModel.Design;
-using System.Net.WebSockets;
+﻿using TheRestaurant.Persons;
 
 namespace TheRestaurant.Folder
 {
     internal class Restaurant
     {
-        public List<Table> Tables { get; set; } = new List<Table>();
-        public Kitchen Kitchen { get; set; } = new Kitchen();
-        public List<Waiter> Waiters { get; set; } = new List<Waiter>();
+        public List<Table> Tables { get; set; } = new();
+        public Kitchen Kitchen { get; set; } = new();
+        public List<Waiter> Waiters { get; set; } = new();
         public double CashRegister { get; set; }
         public double TipJar { get; set; }
         public int Time { get; set; }
-        private readonly Random _random = new Random();
+
         private Entrance entrance = new();
+        private readonly Random _random = new();
         internal readonly int _timeToCookFood = 10;
         internal readonly int _timeToEatFood = 20;
-        internal readonly int _timeToCleanTable = 3;
-
-
 
         public void Run(Restaurant restaurant)
         {
@@ -35,114 +22,94 @@ namespace TheRestaurant.Folder
 
             while (true)
             {
-                DrawRestaurant();
                 GUI.DrawRestaurant(restaurant, entrance);
-                var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
-                var occupiedWaiters = Waiters.Where(x => x.CleaningTable).ToList();
 
-                //Actionlist(dirtyTables);
+                ManageWaiters(restaurant);
 
-                foreach (var waiter in occupiedWaiters)
-                {
-                    CleanTable(waiter);
-                }
+                ManageChefs();
 
-                foreach (Waiter waiter in availableWaiters)
-                {
-                    var tablesWaitingToOrder = Tables.Where(x => !x.HasOrdered && x.Occupied).ToList();
-                    List<Table> availableTables = Tables.Where(x => !x.Occupied).ToList();
-                    bool canMatchTableToGuest = false;
-                    if (entrance.GroupOfGuests.Count > 0)
-                    {
-                        for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
-                        {
-                            var nextMatchedGroup = entrance.GroupOfGuests[i];
-                            var availableSmallTables = availableTables.Where(x => !x.Occupied && x.Small).ToList();
-                            var availableBigTables = availableTables.Where(x => !x.Occupied && !x.Small).ToList();
-
-                            if (nextMatchedGroup.Count > 2 && availableBigTables.Count > 0)
-                            {
-                                canMatchTableToGuest = true;
-                                break;
-                            }
-                            else if (nextMatchedGroup?.Count < 3 && availableSmallTables.Count > 0)
-                            {
-                                canMatchTableToGuest = true;
-                                break;
-                            }
-                        }
-                    }
-                    var tablesToCheckOut = Tables.Where(x => x.Occupied && x.EatingFoodCounter >= _timeToEatFood).ToList();
-
-                    if (waiter.OutOrder.Count > 0)
-                    {
-                        DropOfFood(waiter);
-                    }
-                    else if (canMatchTableToGuest == true)
-                    {
-                        MatchTableForGuests(availableTables);
-                    }
-                    else if (waiter.HasOrder)
-                    {
-                        DropOffOrder(waiter);
-                    }
-                    else if (Kitchen.OutOrders.Count > 0 && waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
-                    {
-                        PickUpFoodFromKitchen(waiter);
-                    }
-                    else if (tablesWaitingToOrder.Count > 0)
-                    {
-                        CheckIfHasOrdered(waiter, tablesWaitingToOrder);
-                    }
-                    else if (tablesToCheckOut.Count > 0)
-                    {
-                        Checkout(restaurant, tablesToCheckOut, waiter);
-                    }
-                }
-
-                foreach (Chef chef in Kitchen.Chefs)
-                {
-                    CookFood(chef);
-                }
-
-                // If timer needed for table - place here
-                foreach (Table table in Tables)
-                {
-                    ServiceTimer(table);
-                    EatingTimer(table, restaurant);
-                }
-                Console.ReadKey();
-                // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
+                ManageTables();
 
                 Time++;
-
+                Console.ReadKey();
             }
         }
 
-        private void DropOfFood(Waiter waiter)
+        private void ManageWaiters(Restaurant restaurant)
         {
-            // Leave food at table
-            foreach (KeyValuePair<string, List<Food>> foods in waiter.OutOrder)
+            var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
+            var occupiedWaiters = Waiters.Where(x => x.CleaningTable).ToList();
+            foreach (var waiter in occupiedWaiters)
             {
-                // resultTable becomes same as table object that we want to find
-                // Addrange line adds foodlist to tableOrder
-                var resultTable = Tables.Single(table => table.Name == foods.Key);
-                resultTable.Order = new();
-                resultTable.Order.AddRange(foods.Value);
-                resultTable.ServiceScore += waiter.ServiceScore;
-                waiter.OutOrder = new();
-                waiter.HasOrder = false;
-                resultTable.WaitingForFood = false;
+                waiter.CleanTable(waiter, Tables, _random);
             }
+            foreach (Waiter waiter in availableWaiters)
+            {
+                // Sort out tables that are available, waiting for order or waiting to be checked out.
+                var availableTables = Tables.Where(x => !x.Occupied).ToList();
+                var tablesWaitingToOrder = Tables.Where(x => !x.HasOrdered && x.Occupied).ToList();
+                var tablesToCheckOut = Tables.Where(x => x.Occupied && x.EatingFoodCounter >= _timeToEatFood).ToList();
+
+                // If there is a matching table size for a company in the entrance.
+                var canMatchTableToGuest = CanMatchGuestsToTable(availableTables);
+
+                // The waiters different tasks to do.
+                if (waiter.OutOrder.Count > 0)
+                {
+                    Waiter.DropOfFood(waiter, Tables);
+                }
+                else if (canMatchTableToGuest == true)
+                {
+                    MatchTableForGuests(availableTables);
+                }
+                else if (waiter.HasOrder)
+                {
+                    Kitchen.DropOffOrders(waiter);
+                }
+                else if (Kitchen.OutOrders.Count > 0 && waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
+                {
+                    Kitchen.PickUpFood(waiter);
+                }
+                else if (tablesWaitingToOrder.Count > 0 && waiter.HasOrder is false)
+                {
+                    Waiter.CheckIfHasOrdered(waiter, tablesWaitingToOrder, _random);
+                }
+                else if (tablesToCheckOut.Count > 0)
+                {
+                    Checkout(restaurant, tablesToCheckOut, waiter);
+                }
+            }
+        }
+
+        private bool CanMatchGuestsToTable(List<Table> availableTables)
+        {
+            var canMatchTableToGuest = false;
+            if (entrance.GroupOfGuests.Count > 0)
+            {
+                for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
+                {
+                    var nextMatchedGroup = entrance.GroupOfGuests[i];
+                    var availableSmallTables = availableTables.Where(x => !x.Occupied && x.Small).ToList();
+                    var availableBigTables = availableTables.Where(x => !x.Occupied && !x.Small).ToList();
+
+                    if (nextMatchedGroup.Count > 2 && availableBigTables.Count > 0)
+                    {
+                        canMatchTableToGuest = true;
+                        break;
+                    }
+                    else if (nextMatchedGroup?.Count < 3 && availableSmallTables.Count > 0)
+                    {
+                        canMatchTableToGuest = true;
+                        break;
+                    }
+                }
+            }
+            return canMatchTableToGuest;
         }
 
         // Check for suitable table for party of guests
         private void MatchTableForGuests(List<Table> availableTables)
         {
-            //availableTables[0].Guests.AddRange(groupOfGuests);
-            //entrance.GroupOfGuests.Remove(groupOfGuests);
-            //availableTables[0].Occupied = true;
-            //availableTables[0].Receipt = new();
             var availableSmallTables = availableTables.Where(x => x.Small).ToList();
             var availableBigTables = availableTables.Where(x => !x.Small).ToList();
 
@@ -152,7 +119,7 @@ namespace TheRestaurant.Folder
                 {
                     if (availableSmallTables.Count > 0)
                     {
-                        PlaceAtTable(i, availableSmallTables);
+                        Waiter.PlaceGuestsAtTable(i, availableSmallTables, entrance.GroupOfGuests);
                         break;
                     }
                 }
@@ -160,155 +127,14 @@ namespace TheRestaurant.Folder
                 {
                     if (availableBigTables.Count > 0)
                     {
-                        PlaceAtTable(i, availableBigTables);
+                        Waiter.PlaceGuestsAtTable(i, availableBigTables, entrance.GroupOfGuests);
                         break;
                     }
                 }
             }
         }
 
-        // Place guests at available table
-        private void PlaceAtTable(int i, List<Table> tables)
-        {
-            foreach (Table table in tables)
-            {
-                // Skicka med en waiter från entré till bord
-                table.Guests.AddRange(entrance.GroupOfGuests[i]);
-                entrance.GroupOfGuests.RemoveAt(i);
-                table.Occupied = true;
-                table.Receipt = new();
-                break;
-            }
-        }
-
-        private void CheckIfHasOrdered(Waiter waiter, List<Table> tablesWaitingToOrder)
-        {
-            foreach (Table table in tablesWaitingToOrder)
-            {
-                if (waiter.HasOrder is false)
-                {
-                    foreach (var guest in table.Guests)
-                    {
-                        TakeOrder(guest, _random, table);
-                    }
-                    waiter.InOrder.Add(table.Name, table.Order);
-                    table.ServiceScore += waiter.ServiceScore;
-                    table.HasOrdered = true;
-                    table.WaitingForFood = true;
-                    waiter.HasOrder = true;
-                    break;
-                }
-            }
-        }
-
-        // Check for vegetarians, they dont eat meat or fish. The rest can eat anything. Waiter takes order
-        private void TakeOrder(Guest guest, Random random, Table table)
-        {
-            int index = 0;
-            if (guest.IsVegetarian)
-            {
-                var vegetarianFood = table.Menu.Where(food => food.IsVegetarian).ToList();
-                index = random.Next(vegetarianFood.Count);
-                table.Order.Add(vegetarianFood[index]);
-                guest.MyMeal = vegetarianFood[index];
-            }
-            else
-            {
-                index = random.Next(table.Menu.Count);
-                table.Order.Add(table.Menu[index]);
-                guest.MyMeal = table.Menu[index];
-            }
-        }
-        // Put new(); outside of the foreach, and give the waiter the ability
-        // to take mulitple table orders to the kitchen at once.
-        private void DropOffOrder(Waiter waiter)
-        {
-            foreach (KeyValuePair<string, List<Food>> order in waiter.InOrder)
-            {
-                Kitchen.InOrders.Add(order.Key, order.Value);
-                waiter.InOrder = new();
-                waiter.HasOrder = false;
-            }
-        }
-
-        // Waiter picks up food from kitchen
-        private void PickUpFoodFromKitchen(Waiter waiter)
-        {
-            if (Kitchen.OutOrders.Count > 0 && waiter.HasOrder is false && waiter.HasFoodToDeliver is false)
-            {
-                foreach (KeyValuePair<string, List<Food>> order in Kitchen.OutOrders)
-                {
-                    waiter.OutOrder.Add(order.Key, order.Value);
-                    Kitchen.OutOrders.Remove(order.Key);
-                    break;  // If not break; one waiter takes every order from kitchen outorders (effective restaurant variant)
-                }
-            }
-        }
-
-        /// <summary>
-        ///  Chef cooks meal for table for 10 turns and add points
-        /// </summary>
-        /// <param name="chef"></param> 
-        private void CookFood(Chef chef)
-        {
-            //Chef takes order
-            if (Kitchen.InOrders.Count > 0 && chef.HasOrder == false)
-            {
-                foreach (KeyValuePair<string, List<Food>> order in Kitchen.InOrders)
-                {
-                    chef.Order.Add(order.Key, order.Value);
-                    Kitchen.InOrders.Remove(order.Key);
-                    chef.HasOrder = true;
-                    break;
-                }
-            }
-            //Chef cooks for TimeToCookFood(10) turns 
-            if (chef.HasOrder == true)
-            {
-                chef.Counter++;
-            }
-            //Chef puts cooked food in outOrders (kitchen window)
-            if (chef.Counter == _timeToCookFood)
-            {
-                foreach (KeyValuePair<string, List<Food>> order in chef.Order)
-                {
-                    //Give score to each food in order
-                    foreach (Food food in order.Value)
-                    {
-                        food.QualityScore = chef.CompetenceLevel;
-                    }
-                    Kitchen.OutOrders.Add(order.Key, order.Value);
-                    chef.Order = new();
-                    chef.HasOrder = false;
-                    chef.Counter = 0;
-                }
-            }
-        }
-
-        // TIMER
-        private void ServiceTimer(Table table)
-        {
-            if (table.WaitingForFood == true)
-            {
-                table.WaitingTimeScore++;
-            }
-        }
-
-        // TIMER
-        private void EatingTimer(Table table, Restaurant restaurant)
-        {
-            if (table.WaitingForFood == false && table.HasOrdered == true)
-            {
-                // WaitingTimeScore++ now increases points longer the wait - backwardsthinking
-                table.EatingFoodCounter++;
-            }
-            // TimeToEatFood = 20
-            if (table.EatingFoodCounter >= _timeToEatFood)
-            {
-                table.IsDirty = true;
-            }
-        }
-
+        // Vet ej vart denna ska vara? KAnske ska vara i restaurant?
         private void Checkout(Restaurant restaurant, List<Table> tablesToCheckOut, Waiter waiter)
         {
             // TA BORT restaurant på något sätt
@@ -318,97 +144,53 @@ namespace TheRestaurant.Folder
                 Business.SetPoints(table, restaurant);
                 Business.Pay(table, restaurant);
                 Receipt(table);
-
-                StartCleaning(table, waiter);
-
+                Waiter.StartCleaning(table, waiter);
                 break;
-
             }
         }
-        private void StartCleaning(Table table, Waiter waiter)
-        {
-            table.Guests = new();
-            waiter.CleaningTable = true;
-            table.EatingFoodCounter = 0;
-            table.Waiter = waiter;
-        }
 
-        private void CleanTable(Waiter waiter)
+        private void ManageChefs()
         {
-            var result = Tables.Where(x => x.Waiter == waiter).FirstOrDefault();
-            //if (table.Waiter.Name != "")
-            //{
-            if (result is not null)
+            foreach (Chef chef in Kitchen.Chefs)
             {
-                waiter.Counter++;
-
-                if (waiter.Counter >= _timeToCleanTable) // _timeToCleanTable = 3
+                // Tycker denna ska vara tre if/else ifs, annars kan de göra alla tre i en runda
+                if (Kitchen.InOrders.Count > 0 && !chef.HasOrder)
                 {
-                    result.IsDirty = false;
-                    result.Occupied = false;
-                    waiter.CleaningTable = false;
-                    result.HasOrdered = false;
-                    result.Order = new();
-                    result.Waiter = new(_random, "");
-                    result.Actions = "";
-                    waiter.Counter = 0;
-                    result.ServiceScore = 0;
-                    result.OverallScore = 0;
-                    result.WaitingTimeScore = 0;
-                    result.EatingFoodCounter = 0;
+                    Kitchen.TakeNewOrder(chef);
+                }
+                if (chef.HasOrder)
+                {
+                    Chef.CookFood(chef);
+                }
+                if (chef.Counter == _timeToCookFood)
+                {
+                    Kitchen.PlaceCookedFoodForPickup(chef);
                 }
             }
-            //}
-            //else
-            //{
-            //    var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
-
-            //    if (availableWaiters.Count > 0)
-            //    {
-            //        table.Waiter = availableWaiters[0];
-            //        availableWaiters[0].CleaningTable = true;
-            //    }
-            //}
-
         }
 
-        // Create Persons and Tables
-        private void CreateRestaurant()
+        private void ManageTables()
         {
-            // Creates guests and placed them in groups, a list of lists
-            Guest.ChooseGuests(80, _random, entrance.GroupOfGuests);
-
-            // Creates waiters in restaurant
-            Person.Create(_random, Waiters, 3);
-            // Creates chefs in kitchen
-            Person.Create(_random, Kitchen.Chefs, 5);
-
-            // Creates small and big tables
-            Table.Create(_random, Tables, true, 5);
-            Table.Create(_random, Tables, false, 5);
-        }
-
-        public static void DrawRestaurant()
-        {
-            Console.SetCursorPosition(0, 0);
-            Console.WriteLine("┌" + "".PadRight(100, '─') + "┐");
-
-            for (int rows = 0; rows < 25; rows++)
+            // If timer needed for table - place here
+            foreach (Table table in Tables)
             {
-                Console.Write("│");
-                for (int cols = 0; cols < 100; cols++)
+                if (table.WaitingForFood)
                 {
-                    Console.Write(" ");
+                    table.WaitingTimeScore++;
                 }
-                Console.Write("│");
-                Console.WriteLine();
+                if (!table.WaitingForFood && table.HasOrdered)
+                {
+                    table.EatingFoodCounter++;
+                }
+                if (table.EatingFoodCounter >= _timeToEatFood)
+                {
+                    table.IsDirty = true;
+                }
             }
-            Console.WriteLine("└" + "".PadRight(100, '─') + "┘");
         }
 
-        internal void Receipt(Table table)
+        internal static void Receipt(Table table)
         {
-
             table.Receipt.Add("Group: " + table.Guests[0].Name + " +" + (table.Guests.Count - 1));
             foreach (Guest guest in table.Guests)
             {
@@ -424,6 +206,22 @@ namespace TheRestaurant.Folder
             }
             table.Receipt.Add(table.Actions);
             GUI.DrawActionList("Receipt", 0, 28, table.Receipt);
+        }
+
+        // Create Persons and Tables
+        private void CreateRestaurant()
+        {
+            // Creates guests and placed them in groups, a list of lists
+            Guest.CreateGuests(80, _random, entrance.GroupOfGuests);
+
+            // Creates waiters in restaurant
+            Person.Create(_random, Waiters, 3);
+            // Creates chefs in kitchen
+            Person.Create(_random, Kitchen.Chefs, 5);
+
+            // Creates small and big tables
+            Table.Create(_random, Tables, true, 5);
+            Table.Create(_random, Tables, false, 5);
         }
 
         private void Actionlist(List<Table> dirtyTables)

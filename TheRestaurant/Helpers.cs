@@ -1,22 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TheRestaurant.Persons;
-
-namespace TheRestaurant
+﻿namespace TheRestaurant
 {
     internal class Helpers
     {
         public static string GetName()
         {
-            Random random = new Random();
-            int index;
-            string name;
-
-            List<string> Surnames = new();
-            string[] string_surnames =
+            Random random = new();
+            List<string> surnames = new()
             {
                 "Smith", "Johnson", "Williams", "Brown", "Jones",
                 "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
@@ -39,12 +28,9 @@ namespace TheRestaurant
                 "Price", "Alvarez", "Castillo", "Sanders", "Patel",
                 "Myers", "Long", "Ross", "Foster", "Jimenez"
             };
-            Surnames.AddRange(string_surnames);
+            int index = random.Next(surnames.Count);
 
-            index = random.Next(Surnames.Count);
-            name = Surnames[index];
-
-            return name;
+            return surnames[index];
         }
     }
 }
