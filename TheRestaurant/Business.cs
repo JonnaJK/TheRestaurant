@@ -141,7 +141,7 @@ namespace TheRestaurant
         {
 
         }
-        internal static void Run(Table table, Restaurant restaurant)
+        internal static void SetPoints(Table table, Restaurant restaurant)
         {
             Pointsystem(table, restaurant);
             foreach (Guest guest in table.Guests)
