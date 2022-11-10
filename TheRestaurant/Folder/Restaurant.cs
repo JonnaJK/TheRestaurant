@@ -37,14 +37,15 @@ namespace TheRestaurant.Folder
             {
                 DrawRestaurant();
                 GUI.DrawRestaurant(restaurant, entrance);
+                var tablesWaitingForOrder = Tables.Where(x => !x.HasOrdered && x.Occupied).ToList();
                 var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
                 var occupiedWaiters = Waiters.Where(x => x.CleaningTable).ToList();
+
+                //Actionlist(dirtyTables);
 
                 //foreach (Waiter waiter in occupiedWaiters)
                 //{
                 var dirtyTables = Tables.Where(x => x.IsDirty).ToList();
-                Actionlist(dirtyTables);
-
                 if (dirtyTables.Count > 0)
                 {
                     CleanTable(dirtyTables, occupiedWaiters);
@@ -52,30 +53,32 @@ namespace TheRestaurant.Folder
                 //}
 
                 // Fetch next group (if there is one) and get an available table to the company
-                List<Guest>? nextMatchedGroup = new();
-                List<Table> availableTables = new();
-                bool canMatchTableToGuest = false;
-                if (entrance.GroupOfGuests.Count > 0)
-                {
-                    nextMatchedGroup = entrance.GroupOfGuests.FirstOrDefault();
-                    var availableSmallTables = Tables.Where(x => !x.Occupied && x.Small).ToList();
-                    var availableBigTables = Tables.Where(x => !x.Occupied && !x.Small).ToList();
-
-                    if (nextMatchedGroup?.Count > 2 && availableBigTables.Count > 0)
-                    {
-                        canMatchTableToGuest = true;
-                        availableTables = availableBigTables;
-                    }
-                    else if (nextMatchedGroup?.Count < 3 && availableSmallTables.Count > 0)
-                    {
-                        canMatchTableToGuest = true;
-                        availableTables = availableSmallTables;
-                    }
-                }
+                //List<Guest>? nextMatchedGroup = new(); // ev ta bort
 
                 foreach (Waiter waiter in availableWaiters)
                 {
-                    var freeTables = Tables.Where(x => !x.Occupied).ToList();
+                    List<Table> availableTables = Tables.Where(x => !x.Occupied).ToList();
+                    bool canMatchTableToGuest = false;
+                    if (entrance.GroupOfGuests.Count > 0)
+                    {
+                        for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
+                        {
+                            var nextMatchedGroup = entrance.GroupOfGuests[i];
+                            var availableSmallTables = availableTables.Where(x => !x.Occupied && x.Small).ToList();
+                            var availableBigTables = availableTables.Where(x => !x.Occupied && !x.Small).ToList();
+
+                            if (nextMatchedGroup.Count > 2 && availableBigTables.Count > 0)
+                            {
+                                canMatchTableToGuest = true;
+                                break;
+                            }
+                            else if (nextMatchedGroup?.Count < 3 && availableSmallTables.Count > 0)
+                            {
+                                canMatchTableToGuest = true;
+                                break;
+                            }
+                        }
+                    }
 
                     if (waiter.OutOrder.Count > 0)
                     {
@@ -83,7 +86,7 @@ namespace TheRestaurant.Folder
                     }
                     else if (canMatchTableToGuest == true)
                     {
-                        MatchTableForGuests(availableTables, nextMatchedGroup);
+                        MatchTableForGuests(availableTables);
                     }
                     else if (waiter.HasOrder)
                     {
@@ -93,11 +96,10 @@ namespace TheRestaurant.Folder
                     {
                         PickUpFoodFromKitchen(waiter);
                     }
-                    else
+                    else if (tablesWaitingForOrder.Count > 0)
                     {
                         CheckIfHasOrdered(waiter);
                     }
-
                 }
 
                 foreach (Chef chef in Kitchen.Chefs)
@@ -137,32 +139,34 @@ namespace TheRestaurant.Folder
         }
 
         // Check for suitable table for party of guests
-        private void MatchTableForGuests(List<Table> availableTables, List<Guest> groupOfGuests)
+        private void MatchTableForGuests(List<Table> availableTables)
         {
-            availableTables[0].Guests.AddRange(groupOfGuests);
-            entrance.GroupOfGuests.Remove(groupOfGuests);
-            availableTables[0].Occupied = true;
+            //availableTables[0].Guests.AddRange(groupOfGuests);
+            //entrance.GroupOfGuests.Remove(groupOfGuests);
+            //availableTables[0].Occupied = true;
+            //availableTables[0].Receipt = new();
+            var availableSmallTables = availableTables.Where(x => x.Small).ToList();
+            var availableBigTables = availableTables.Where(x => !x.Small).ToList();
 
-            //for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
-            //{
-            //    if (entrance.GroupOfGuests[i].Count <= 2)
-            //    {
-
-            //        if (availableTables.Count > 0)
-            //        {
-            //            PlaceAtTable(i, availableTables);
-            //            break;
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (availableTables.Count > 0)
-            //        {
-            //            PlaceAtTable(i, availableTables);
-            //            break;
-            //        }
-            //    }
-            //}
+            for (int i = 0; i < entrance.GroupOfGuests.Count; i++)
+            {
+                if (entrance.GroupOfGuests[i].Count <= 2)
+                {
+                    if (availableSmallTables.Count > 0)
+                    {
+                        PlaceAtTable(i, availableSmallTables);
+                        break;
+                    }
+                }
+                else if (entrance.GroupOfGuests[i].Count > 2)
+                {
+                    if (availableBigTables.Count > 0)
+                    {
+                        PlaceAtTable(i, availableBigTables);
+                        break;
+                    }
+                }
+            }
         }
 
         // Place guests at available table
@@ -174,10 +178,12 @@ namespace TheRestaurant.Folder
                 table.Guests.AddRange(entrance.GroupOfGuests[i]);
                 entrance.GroupOfGuests.RemoveAt(i);
                 table.Occupied = true;
+                table.Receipt = new();
                 break;
             }
         }
 
+        // THIS IS WRONG, MAKE IT STOP!!
         private void CheckIfHasOrdered(Waiter waiter)
         {
             foreach (Table table in Tables)
@@ -302,13 +308,12 @@ namespace TheRestaurant.Folder
                 table.EatingFoodCounter++;
             }
             // TimeToEatFood = 20
-            if (table.EatingFoodCounter >= _timeToEatFood)
+            if (table.EatingFoodCounter >= _timeToEatFood && table.Guests.Count > 0)
             {
                 Checkout(table, restaurant);
 
                 // Newsfeed();
                 table.Guests = new();
-                table.Receipt = new();
                 table.IsDirty = true;
                 table.HasOrdered = false;
 
@@ -336,6 +341,7 @@ namespace TheRestaurant.Folder
             // TA BORT restaurant på något sätt
             Business.Run(table, restaurant);
             Business.Pay(table, restaurant);
+            Receipt(table);
         }
 
         private void CleanTable(List<Table> dirtyTables, List<Waiter> occupiedWaiters)
@@ -393,7 +399,6 @@ namespace TheRestaurant.Folder
             Table.Create(_random, Tables, false, 5);
         }
 
-
         public static void DrawRestaurant()
         {
             Console.SetCursorPosition(0, 0);
@@ -411,6 +416,7 @@ namespace TheRestaurant.Folder
             }
             Console.WriteLine("└" + "".PadRight(100, '─') + "┘");
         }
+
         internal void Receipt(Table table)
         {
 
@@ -419,11 +425,11 @@ namespace TheRestaurant.Folder
             {
                 if (guest.Tips != -1)
                 {
-                    table.Receipt.Add($"{guest.MyMeal.Name}, {guest.MyMeal.Price} SEK and tipped {Math.Round(guest.Tips, 2)} SEK");
+                    table.Receipt.Add($"{guest.Name}: {guest.MyMeal.Name}, {guest.MyMeal.Price} SEK and tipped {Math.Round(guest.Tips, 2)} SEK");
                 }
                 else
                 {
-                    table.Receipt.Add($"{guest.MyMeal.Name}, {guest.MyMeal.Price} SEK but could only pay {Math.Round(guest.Receipt, 2)} SEK,");
+                    table.Receipt.Add($"{guest.Name}: {guest.MyMeal.Name}, {guest.MyMeal.Price} SEK but could only pay {Math.Round(guest.Receipt, 2)} SEK,");
                     table.Receipt.Add($"so they also had to wash the dishes");
                 }
             }

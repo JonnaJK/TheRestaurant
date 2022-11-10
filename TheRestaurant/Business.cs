@@ -136,7 +136,7 @@ namespace TheRestaurant
         private static int _waitingTimeScore;
         private static int _serviceScore;
         private static readonly int _maxOverallScore = 20;
-       
+
         internal static void ShowReceipt()
         {
 
@@ -147,7 +147,7 @@ namespace TheRestaurant
             foreach (Guest guest in table.Guests)
             {
                 guest.Score = OverallScore();
-                Tips(guest, table);
+                Tips(guest);
                 table.OverallScore += guest.Score;
             }
             table.OverallScore /= table.Guests.Count;
@@ -178,7 +178,7 @@ namespace TheRestaurant
                     }
                 }
                 // They dont have enough money to pay for their meal, nor leaving a tip.
-                else
+                else if (guest.Money < guest.MyMeal.Price)
                 {
                     restaurant.CashRegister += guest.Money;
                     guest.Receipt = guest.Money;
@@ -213,9 +213,12 @@ namespace TheRestaurant
             }
         }
 
-        private static void Tips(Guest guest, Table table)
+        private static void Tips(Guest guest)
         {
-            guest.Tips = (guest.Score / 100) * guest.MyMeal.Price;
+            if (guest.MyMeal != null)
+            {
+                guest.Tips = (guest.Score / 100) * guest.MyMeal.Price;
+            }
         }
 
         private static double OverallScore()
