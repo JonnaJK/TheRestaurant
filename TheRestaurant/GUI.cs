@@ -81,9 +81,9 @@ namespace TheRestaurant
             }
             Console.ResetColor();
 
-            foreach (Table table in restaurant.Tables)
+            foreach (Table table in restaurant.Tables) // lade in i restaurant Receipt istället
             {
-                if(table.Receipt.Count > 0)
+                if (table.Receipt.Count > 0)
                 {
                     DrawActionList("Receipt", 0, 28, table.Receipt);
                 }
@@ -268,12 +268,14 @@ namespace TheRestaurant
 
             foreach (var chef in anyList)
             {
+                Console.ForegroundColor = ConsoleColor.Green;
                 if (chef is Chef c)
                 {
                     graphics[i] = c.Name;
                     i++;
                 }
             }
+            Console.ResetColor();
             Draw(header, fromLeft, fromTop, graphics);
         }
 

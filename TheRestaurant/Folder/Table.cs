@@ -39,8 +39,6 @@ namespace TheRestaurant.Folder
 
             Food.CreateMenu(Menu);
         }
-
-
         internal static void Create(Random random, List<Table> tables, bool small, int amount)
         {
             int number = tables.Count;
@@ -50,7 +48,6 @@ namespace TheRestaurant.Folder
                 tables.Add(new Table(random, name, small));
             }
         }
-
 
     }
 }

@@ -18,16 +18,15 @@ namespace TheRestaurant.Folder
         public List<Table> Tables { get; set; } = new List<Table>();
         public Kitchen Kitchen { get; set; } = new Kitchen();
         public List<Waiter> Waiters { get; set; } = new List<Waiter>();
+        private Entrance entrance = new();
+        private readonly Random _random = new Random();
         public double CashRegister { get; set; }
         public double TipJar { get; set; }
         public int Time { get; set; }
-        private readonly Random _random = new Random();
-        private Entrance entrance = new();
+        public int HasDoneDishes { get; set; }
         internal readonly int _timeToCookFood = 10;
         internal readonly int _timeToEatFood = 20;
         internal readonly int _timeToCleanTable = 3;
-
-
 
         public void Run(Restaurant restaurant)
         {
@@ -40,7 +39,7 @@ namespace TheRestaurant.Folder
                 var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
                 var occupiedWaiters = Waiters.Where(x => x.CleaningTable).ToList();
 
-                //Actionlist(dirtyTables);
+                Actionlist();
 
                 foreach (var waiter in occupiedWaiters)
                 {
@@ -115,7 +114,6 @@ namespace TheRestaurant.Folder
                 // KOM IHÅG ATT TA BORT ALLA HÅRDKODADE TAL
 
                 Time++;
-
             }
         }
 
@@ -322,7 +320,6 @@ namespace TheRestaurant.Folder
                 StartCleaning(table, waiter);
 
                 break;
-
             }
         }
         private void StartCleaning(Table table, Waiter waiter)
@@ -336,8 +333,6 @@ namespace TheRestaurant.Folder
         private void CleanTable(Waiter waiter)
         {
             var result = Tables.Where(x => x.Waiter == waiter).FirstOrDefault();
-            //if (table.Waiter.Name != "")
-            //{
             if (result is not null)
             {
                 waiter.Counter++;
@@ -408,7 +403,6 @@ namespace TheRestaurant.Folder
 
         internal void Receipt(Table table)
         {
-
             table.Receipt.Add("Group: " + table.Guests[0].Name + " +" + (table.Guests.Count - 1));
             foreach (Guest guest in table.Guests)
             {
@@ -420,36 +414,39 @@ namespace TheRestaurant.Folder
                 {
                     table.Receipt.Add($"{guest.Name}: {guest.MyMeal.Name}, {guest.MyMeal.Price} SEK but could only pay {Math.Round(guest.Receipt, 2)} SEK,");
                     table.Receipt.Add($"so they also had to wash the dishes");
+                    HasDoneDishes++;
                 }
             }
             table.Receipt.Add(table.Actions);
             GUI.DrawActionList("Receipt", 0, 28, table.Receipt);
         }
 
-        private void Actionlist(List<Table> dirtyTables)
+        private void Actionlist()
         {
-
             List<string> actionlist = new();
-            var counter = 0;
-            foreach (var waiter in Waiters)
-            {
-                actionlist.Add("Namn: " + waiter.Name);
-                actionlist.Add("HasOrder: " + waiter.HasOrder);
-                actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
-                actionlist.Add("Cleaning table: " + waiter.CleaningTable);
-                actionlist.Add("Tid att städa: " + waiter.Counter);
-                actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver); // visar fel
-                actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
-                actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
-                actionlist.Add("ServiceScore: " + waiter.ServiceScore);
-                actionlist.Add("--------------------------------");
-                counter++;
-                //if (counter >= 2)
-                //{
-                //    break;
-                //}
 
-            }
+            actionlist.Add("Minutes passed: " + Time);
+            actionlist.Add("Cashregister: " + Math.Round(CashRegister, 2));
+            actionlist.Add("TipJar: " + Math.Round(TipJar, 2));
+            actionlist.Add("Numbers of guests having to wash dishes: " + HasDoneDishes);
+            GUI.DrawActionList("Newsfeed", 105, 0, actionlist);
+
+            //var counter = 0;
+            //foreach (var waiter in Waiters)
+            //{
+            //    actionlist.Add("Namn: " + waiter.Name);
+            //    actionlist.Add("HasOrder: " + waiter.HasOrder);
+            //    actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
+            //    actionlist.Add("Cleaning table: " + waiter.CleaningTable);
+            //    actionlist.Add("Tid att städa: " + waiter.Counter);
+            //    actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver); // visar fel
+            //    actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
+            //    actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
+            //    actionlist.Add("ServiceScore: " + waiter.ServiceScore);
+            //    actionlist.Add("--------------------------------");
+            //    counter++;
+
+            //}
 
             //foreach (Table waiter in Tables)
             //{
@@ -475,9 +472,6 @@ namespace TheRestaurant.Folder
 
             //}
 
-            actionlist.Add("Kassaregister: " + Math.Round(CashRegister, 2));
-            actionlist.Add("TipJar: " + Math.Round(TipJar, 2));
-            GUI.DrawActionList("Actionlist", 105, 0, actionlist);
 
         }
     }
