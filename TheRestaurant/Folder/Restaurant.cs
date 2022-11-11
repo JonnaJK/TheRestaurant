@@ -226,28 +226,30 @@ namespace TheRestaurant.Folder
 
         private void Actionlist(List<Table> dirtyTables)
         {
-
             List<string> actionlist = new();
-            var counter = 0;
-            foreach (var waiter in Waiters)
-            {
-                actionlist.Add("Namn: " + waiter.Name);
-                actionlist.Add("HasOrder: " + waiter.HasOrder);
-                actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
-                actionlist.Add("Cleaning table: " + waiter.CleaningTable);
-                actionlist.Add("Tid att städa: " + waiter.Counter);
-                actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver); // visar fel
-                actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
-                actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
-                actionlist.Add("ServiceScore: " + waiter.ServiceScore);
-                actionlist.Add("--------------------------------");
-                counter++;
-                //if (counter >= 2)
-                //{
-                //    break;
-                //}
 
-            }
+            actionlist.Add("Minutes passed: " + Time);
+            actionlist.Add("Cashregister: " + Math.Round(CashRegister, 2));
+            actionlist.Add("TipJar: " + Math.Round(TipJar, 2));
+            actionlist.Add("Numbers of guests having to wash dishes: " + HasDoneDishes);
+            GUI.DrawActionList("Newsfeed", 105, 0, actionlist);
+
+            //var counter = 0;
+            //foreach (var waiter in Waiters)
+            //{
+            //    actionlist.Add("Namn: " + waiter.Name);
+            //    actionlist.Add("HasOrder: " + waiter.HasOrder);
+            //    actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
+            //    actionlist.Add("Cleaning table: " + waiter.CleaningTable);
+            //    actionlist.Add("Tid att städa: " + waiter.Counter);
+            //    actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver); // visar fel
+            //    actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
+            //    actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
+            //    actionlist.Add("ServiceScore: " + waiter.ServiceScore);
+            //    actionlist.Add("--------------------------------");
+            //    counter++;
+
+            //}
 
             //foreach (Table waiter in Tables)
             //{
@@ -273,9 +275,6 @@ namespace TheRestaurant.Folder
 
             //}
 
-            actionlist.Add("Kassaregister: " + Math.Round(CashRegister, 2));
-            actionlist.Add("TipJar: " + Math.Round(TipJar, 2));
-            GUI.DrawActionList("Actionlist", 105, 0, actionlist);
 
         }
     }
