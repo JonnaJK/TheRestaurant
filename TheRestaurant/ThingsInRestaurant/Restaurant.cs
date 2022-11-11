@@ -1,4 +1,5 @@
-﻿using TheRestaurant.Persons;
+﻿using System;
+using TheRestaurant.Persons;
 
 namespace TheRestaurant.ThingsInRestaurant
 {
@@ -179,10 +180,13 @@ namespace TheRestaurant.ThingsInRestaurant
                 if (!table.WaitingForFood && table.HasOrdered)
                 {
                     table.EatingFoodCounter++;
+
+                    
                 }
                 if (table.EatingFoodCounter >= _timeToEatFood)
                 {
                     table.IsDirty = true;
+                    table.Waiter = new(_random, "", 0);
                 }
             }
         }

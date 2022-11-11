@@ -1,4 +1,5 @@
-﻿using TheRestaurant.Foods;
+﻿using System;
+using TheRestaurant.Foods;
 using TheRestaurant.ThingsInRestaurant;
 
 namespace TheRestaurant.Persons
@@ -101,6 +102,7 @@ namespace TheRestaurant.Persons
         }
 
         internal void CleanTable(Waiter waiter, List<Table> tables, Random random)
+        
         {
             var result = tables.Where(x => x.Waiter == waiter).FirstOrDefault();
 

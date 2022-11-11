@@ -22,7 +22,14 @@ namespace TheRestaurant
             {
                 for (int j = 0; j < brakeRow; j++)
                 {
-                    Draw(restaurant.Tables[counter].Name, restaurant.Tables[counter].Waiter.Name, fromLeft, fromTop, restaurant.Tables[counter].Guests, restaurant.Tables[counter].Small);
+                    if (restaurant.Tables[counter].EatingFoodCounter > 0 && restaurant.Tables[counter].Waiter.Name == "")
+                    {
+                        Draw(restaurant.Tables[counter].Name, restaurant.Tables[counter].EatingFoodCounter.ToString(), fromLeft, fromTop, restaurant.Tables[counter].Guests, restaurant.Tables[counter].Small);                       
+                    }
+                    else
+                    {
+                        Draw(restaurant.Tables[counter].Name, restaurant.Tables[counter].Waiter.Name, fromLeft, fromTop, restaurant.Tables[counter].Guests, restaurant.Tables[counter].Small);
+                    }
                     fromLeft += 25;
                     counter++;
                 }
