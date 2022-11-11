@@ -1,7 +1,7 @@
 ﻿using TheRestaurant.Foods;
 using TheRestaurant.Persons;
 
-namespace TheRestaurant.Folder
+namespace TheRestaurant.ThingsInRestaurant
 {
     internal class Kitchen
     {
@@ -10,7 +10,6 @@ namespace TheRestaurant.Folder
         public Dictionary<string, List<Food>> OutOrders { get; set; } = new();
         public bool HasOrders { get; set; }
         public bool HasFoodToPickUp { get; set; }
-
 
         // Put new(); outside of the foreach, and give the waiter the ability
         // to take mulitple table orders to the kitchen at once.
@@ -26,7 +25,7 @@ namespace TheRestaurant.Folder
 
         internal void TakeNewOrder(Chef chef)
         {
-            //Chef takes order
+            //Chef takes order from kitchen
             if (InOrders.Count > 0 && chef.HasOrder == false)
             {
                 foreach (KeyValuePair<string, List<Food>> order in InOrders)

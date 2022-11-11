@@ -1,4 +1,4 @@
-﻿namespace TheRestaurant.Folder
+﻿namespace TheRestaurant.ThingsInRestaurant
 {
     internal class Order
     {

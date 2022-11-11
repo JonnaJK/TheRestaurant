@@ -1,6 +1,6 @@
 ﻿using TheRestaurant.Persons;
 
-namespace TheRestaurant.Folder
+namespace TheRestaurant.ThingsInRestaurant
 {
     internal class Restaurant
     {
@@ -24,6 +24,7 @@ namespace TheRestaurant.Folder
             while (true)
             {
                 GUI.DrawRestaurant(restaurant, entrance);
+                Actionlist();
 
                 ManageWaiters(restaurant);
 
@@ -57,7 +58,7 @@ namespace TheRestaurant.Folder
                 // The waiters different tasks to do.
                 if (waiter.OutOrder.Count > 0)
                 {
-                    Waiter.DropOfFood(waiter, Tables);
+                    Waiter.DropOffFood(waiter, Tables);
                 }
                 else if (canMatchTableToGuest == true)
                 {
@@ -135,10 +136,8 @@ namespace TheRestaurant.Folder
             }
         }
 
-        // Vet ej vart denna ska vara? KAnske ska vara i restaurant?
         private void Checkout(Restaurant restaurant, List<Table> tablesToCheckOut, Waiter waiter)
         {
-            // TA BORT restaurant på något sätt
             foreach (var table in tablesToCheckOut)
             {
                 table.ServiceScore += waiter.ServiceScore;
@@ -154,7 +153,6 @@ namespace TheRestaurant.Folder
         {
             foreach (Chef chef in Kitchen.Chefs)
             {
-                // Tycker denna ska vara tre if/else ifs, annars kan de göra alla tre i en runda
                 if (Kitchen.InOrders.Count > 0 && !chef.HasOrder)
                 {
                     Kitchen.TakeNewOrder(chef);
@@ -172,7 +170,6 @@ namespace TheRestaurant.Folder
 
         private void ManageTables()
         {
-            // If timer needed for table - place here
             foreach (Table table in Tables)
             {
                 if (table.WaitingForFood)
@@ -207,6 +204,7 @@ namespace TheRestaurant.Folder
                 }
             }
             table.Receipt.Add(table.Actions);
+            table.Receipt.Add(new string(' ', 98));
             GUI.DrawActionList("Receipt", 0, 28, table.Receipt);
         }
 
@@ -226,7 +224,7 @@ namespace TheRestaurant.Folder
             Table.Create(_random, Tables, false, 5);
         }
 
-        private void Actionlist(List<Table> dirtyTables)
+        private void Actionlist()
         {
             List<string> actionlist = new();
 
@@ -234,21 +232,7 @@ namespace TheRestaurant.Folder
             actionlist.Add("Cashregister: " + Math.Round(CashRegister, 2));
             actionlist.Add("TipJar: " + Math.Round(TipJar, 2));
             actionlist.Add("Numbers of guests having to wash dishes: " + HasDoneDishes);
-            actionlist.Add("--------------------------------");
 
-            foreach (var waiter in Waiters)
-            {
-                actionlist.Add("Namn: " + waiter.Name);
-                actionlist.Add("HasOrder: " + waiter.HasOrder);
-                actionlist.Add("Order: " + String.Join(", ", waiter.InOrder));
-                actionlist.Add("Cleaning table: " + waiter.CleaningTable);
-                actionlist.Add("Tid att städa: " + waiter.Counter);
-                actionlist.Add("Har mat att lämna: " + waiter.HasFoodToDeliver); // visar fel
-                actionlist.Add("Maten: " + String.Join(", ", waiter.OutOrder));
-                actionlist.Add("Antal smutsiga bord: " + dirtyTables.Count);
-                actionlist.Add("ServiceScore: " + waiter.ServiceScore);
-                actionlist.Add("--------------------------------");
-            }
             GUI.DrawActionList("Newsfeed", 105, 0, actionlist);
         }
     }

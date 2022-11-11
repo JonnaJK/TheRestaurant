@@ -1,6 +1,6 @@
-﻿using TheRestaurant.Folder;
-using TheRestaurant.Foods;
+﻿using TheRestaurant.Foods;
 using TheRestaurant.Persons;
+using TheRestaurant.ThingsInRestaurant;
 
 namespace TheRestaurant
 {

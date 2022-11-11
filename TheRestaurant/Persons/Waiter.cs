@@ -1,5 +1,5 @@
-﻿using TheRestaurant.Folder;
-using TheRestaurant.Foods;
+﻿using TheRestaurant.Foods;
+using TheRestaurant.ThingsInRestaurant;
 
 namespace TheRestaurant.Persons
 {
@@ -11,14 +11,16 @@ namespace TheRestaurant.Persons
         public bool HasFoodToDeliver { get; set; }
         public bool CleaningTable { get; set; }
         public int ServiceScore { get; set; }
+        public int CursorPos { get; set; }
         private readonly int _timeToCleanTable = 3;
-        public Waiter(Random _random, string name)
+        public Waiter(Random _random, string name, int cursorPos)
         {
             Name = name;
             ServiceScore = _random.Next(1, 6);
+            CursorPos = cursorPos;
         }
 
-        internal static void DropOfFood(Waiter waiter, List<Table> tables)
+        internal static void DropOffFood(Waiter waiter, List<Table> tables)
         {
             // Leave food at table
             foreach (KeyValuePair<string, List<Food>> foods in waiter.OutOrder)
@@ -32,6 +34,9 @@ namespace TheRestaurant.Persons
                 waiter.OutOrder = new();
                 waiter.HasOrder = false;
                 resultTable.WaitingForFood = false;
+
+                Console.SetCursorPosition(105, waiter.CursorPos);
+                Console.WriteLine(waiter.Name + " places food at " + resultTable.Name + "                                                 ");
             }
         }
 
@@ -40,7 +45,6 @@ namespace TheRestaurant.Persons
         {
             foreach (Table table in tables)
             {
-                // Skicka med en waiter från entré till bord
                 table.Guests.AddRange(groupOfGuests[i]);
                 groupOfGuests.RemoveAt(i);
                 table.Occupied = true;
@@ -62,6 +66,9 @@ namespace TheRestaurant.Persons
                 table.HasOrdered = true;
                 table.WaitingForFood = true;
                 waiter.HasOrder = true;
+
+                Console.SetCursorPosition(105, waiter.CursorPos);
+                Console.WriteLine(waiter.Name + " escorted the guests to " + table.Name + " and takes their order.                                          ");
                 break;
             }
         }
@@ -96,20 +103,19 @@ namespace TheRestaurant.Persons
         internal void CleanTable(Waiter waiter, List<Table> tables, Random random)
         {
             var result = tables.Where(x => x.Waiter == waiter).FirstOrDefault();
-            //if (table.Waiter.Name != "")
-            //{
+
             if (result is not null)
             {
                 waiter.Counter++;
 
-                if (waiter.Counter >= _timeToCleanTable) // _timeToCleanTable = 3
+                if (waiter.Counter >= _timeToCleanTable)
                 {
                     result.IsDirty = false;
                     result.Occupied = false;
                     waiter.CleaningTable = false;
                     result.HasOrdered = false;
                     result.Order = new();
-                    result.Waiter = new(random, "");
+                    result.Waiter = new(random, "", 0);
                     result.Actions = "";
                     waiter.Counter = 0;
                     result.ServiceScore = 0;
@@ -118,17 +124,6 @@ namespace TheRestaurant.Persons
                     result.EatingFoodCounter = 0;
                 }
             }
-            //}
-            //else
-            //{
-            //    var availableWaiters = Waiters.Where(x => !x.CleaningTable).ToList();
-            //    if (availableWaiters.Count > 0)
-            //    {
-            //        table.Waiter = availableWaiters[0];
-            //        availableWaiters[0].CleaningTable = true;
-            //    }
-            //}
-
         }
     }
 }

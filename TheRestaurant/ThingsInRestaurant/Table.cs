@@ -1,7 +1,7 @@
 ﻿using TheRestaurant.Foods;
 using TheRestaurant.Persons;
 
-namespace TheRestaurant.Folder
+namespace TheRestaurant.ThingsInRestaurant
 {
     internal class Table
     {
@@ -29,7 +29,7 @@ namespace TheRestaurant.Folder
             Name = name;
             PlacementScore = random.Next(1, 6);
             Small = small;
-            Waiter = new(random, "");
+            Waiter = new(random, "", 0);
 
             Food.CreateMenu(Menu);
         }

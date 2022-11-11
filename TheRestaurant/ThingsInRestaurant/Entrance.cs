@@ -1,6 +1,6 @@
 ﻿using TheRestaurant.Persons;
 
-namespace TheRestaurant.Folder
+namespace TheRestaurant.ThingsInRestaurant
 {
     internal class Entrance
     {

@@ -1,4 +1,4 @@
-﻿using TheRestaurant.Folder;
+﻿using TheRestaurant.ThingsInRestaurant;
 
 namespace TheRestaurant
 {

@@ -7,8 +7,6 @@ namespace TheRestaurant.Persons
         public string Name { get; set; }
         public int Counter { get; set; }
 
-        // Kolla ifall vi kan lägga till en bool HasOrder - DRY! - Väntetiden(service)
-
         public Person()
         {
             Name = Helpers.GetName();
@@ -48,7 +46,7 @@ namespace TheRestaurant.Persons
         {
             for (int i = 0; i < numberOfWaiters; i++)
             {
-                waiters.Add(new Waiter(random, "W" + (i + 1)));
+                waiters.Add(new Waiter(random, "W" + (i + 1), 7 + i));
             }
         }
 

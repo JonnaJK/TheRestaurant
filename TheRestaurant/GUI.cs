@@ -1,5 +1,5 @@
-﻿using TheRestaurant.Folder;
-using TheRestaurant.Persons;
+﻿using TheRestaurant.Persons;
+using TheRestaurant.ThingsInRestaurant;
 
 namespace TheRestaurant
 {
@@ -77,16 +77,13 @@ namespace TheRestaurant
             }
             Console.ResetColor();
 
-            foreach (Table table in restaurant.Tables) // lade in i restaurant Receipt istället
+            foreach (Table table in restaurant.Tables)
             {
                 if (table.Receipt.Count > 0)
                 {
                     DrawActionList("Receipt", 0, 28, table.Receipt);
                 }
             }
-
-            Console.SetCursorPosition(102, 0);
-            Console.WriteLine("Ticks: " + restaurant.Time);
         }
 
         // Draws the border of the restaurant.
