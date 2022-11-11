@@ -11,9 +11,7 @@ namespace TheRestaurant.Persons
         public bool HasFoodToDeliver { get; set; }
         public bool CleaningTable { get; set; }
         public int ServiceScore { get; set; }
-
         private readonly int _timeToCleanTable = 3;
-
         public Waiter(Random _random, string name)
         {
             Name = name;
